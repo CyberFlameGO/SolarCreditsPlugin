@@ -1,13 +1,13 @@
 package gg.solarmc.solarcredits;
 
 import java.math.BigDecimal;
-import java.util.logging.Logger;
 
-import java.util.logging.Level;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gg.solarmc.loader.DataCenter.TransactionRunner;
 import gg.solarmc.loader.Transaction;
@@ -16,7 +16,7 @@ import gg.solarmc.loader.credits.CreditsKey;
 public class CreditCommands implements CommandExecutor {
 
 	private SolarCredit plugin;
-	private Logger logger = Logger.getLogger(CreditCommands.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(CreditCommands.class);
 
 	public CreditCommands(SolarCredit plugin) {
 		this.plugin = plugin;
@@ -65,7 +65,7 @@ public class CreditCommands implements CommandExecutor {
 							player.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName() + " from "
+						logger.error("Failed to deposit " + amount + "for " + receiver.getName() + " from "
 								+ player.getName(), ex);
 						return null;
 					});
@@ -82,7 +82,7 @@ public class CreditCommands implements CommandExecutor {
 							sender.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						logger.error("Failed to deposit " + amount + "for " + receiver.getName(), ex);
 						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("remove")) {
@@ -98,7 +98,7 @@ public class CreditCommands implements CommandExecutor {
 							sender.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						logger.error("Failed to deposit " + amount + "for " + receiver.getName(), ex);
 						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("set")) {
@@ -114,7 +114,7 @@ public class CreditCommands implements CommandExecutor {
 							sender.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						logger.error("Failed to deposit " + amount + "for " + receiver.getName(), ex);
 						return null;
 					});
 				}
