@@ -1,7 +1,9 @@
 package gg.solarmc.solarcredits;
 
 import java.math.BigDecimal;
+import java.util.logging.Logger;
 
+import java.util.logging.Level;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +16,7 @@ import gg.solarmc.loader.credits.CreditsKey;
 public class CreditCommands implements CommandExecutor {
 
 	private SolarCredit plugin;
+	private Logger logger = Logger.getLogger(CreditCommands.class.getName());
 
 	public CreditCommands(SolarCredit plugin) {
 		this.plugin = plugin;
@@ -53,14 +56,18 @@ public class CreditCommands implements CommandExecutor {
 						public void runTransactUsing(Transaction transaction) {
 							player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction,
 									BigDecimal.valueOf(amount));
-						}
-					});
-					plugin.getServer().getDataCenter().runTransact(new TransactionRunner() {
-						@Override
-						public void runTransactUsing(Transaction transaction) {
 							receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction,
 									BigDecimal.valueOf(amount));
 						}
+					}).thenRunSync(new Runnable() {
+						@Override
+						public void run() {
+							player.sendMessage("Done!");
+						}
+					}).exceptionally((ex) -> {
+						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName() + " from "
+								+ player.getName(), ex);
+						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("add")) {
 					plugin.getServer().getDataCenter().runTransact(new TransactionRunner() {
@@ -69,6 +76,14 @@ public class CreditCommands implements CommandExecutor {
 							receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction,
 									BigDecimal.valueOf(amount));
 						}
+					}).thenRunSync(new Runnable() {
+						@Override
+						public void run() {
+							sender.sendMessage("Done!");
+						}
+					}).exceptionally((ex) -> {
+						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("remove")) {
 					plugin.getServer().getDataCenter().runTransact(new TransactionRunner() {
@@ -77,14 +92,30 @@ public class CreditCommands implements CommandExecutor {
 							receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction,
 									BigDecimal.valueOf(amount));
 						}
+					}).thenRunSync(new Runnable() {
+						@Override
+						public void run() {
+							sender.sendMessage("Done!");
+						}
+					}).exceptionally((ex) -> {
+						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("set")) {
 					plugin.getServer().getDataCenter().runTransact(new TransactionRunner() {
 						@Override
 						public void runTransactUsing(Transaction transaction) {
-							//TODO Set Balance
-							//receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).balan
+							// TODO Set Balance
+							// receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).balan
 						}
+					}).thenRunSync(new Runnable() {
+						@Override
+						public void run() {
+							sender.sendMessage("Done!");
+						}
+					}).exceptionally((ex) -> {
+						logger.log(Level.SEVERE, "Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						return null;
 					});
 				}
 			} else {
