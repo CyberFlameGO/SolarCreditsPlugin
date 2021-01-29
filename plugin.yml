@@ -1,0 +1,8 @@
+name: SolarCredit
+main: gg.solarmc.solarcredits.SolarCredit
+version: 1.0
+author: herobrine99dan
+commands:
+   credits:
+      description: The only command of SolarCredit
+      usage: /<command>
