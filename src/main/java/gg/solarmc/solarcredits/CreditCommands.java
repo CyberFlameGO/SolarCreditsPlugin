@@ -32,7 +32,7 @@ public class CreditCommands implements CommandExecutor {
 					sender.sendMessage("Sorry, but i'm not able to find the player " + playerName + " !");
 					return true;
 				}
-				
+
 				if (subCommand.equalsIgnoreCase("send")) {
 
 				} else if (subCommand.equalsIgnoreCase("add")) {
@@ -55,7 +55,7 @@ public class CreditCommands implements CommandExecutor {
 		}
 		try {
 			double d = Double.parseDouble(strNum);
-			
+
 		} catch (NumberFormatException nfe) {
 			return false;
 		}

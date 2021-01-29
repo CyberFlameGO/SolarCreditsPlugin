@@ -1,99 +1,58 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>Solar-Credit-Plugins</groupId>
-  <artifactId>Solar-Credit-Plugins</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
-					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.0.0-M1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>3.0.0-M5</version>
-					<configuration>
-						<argLine>-XX:TieredStopAtLevel=1 -XX:-TieredCompilation</argLine>
-						<trimStackTrace>false</trimStackTrace>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>integration-test</goal>
-								<goal>verify</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-install-plugin</artifactId>
-					<version>3.0.0-M1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.2.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M5</version>
-					<configuration>
-						<argLine>-XX:TieredStopAtLevel=1 -XX:-TieredCompilation</argLine>
-						<trimStackTrace>false</trimStackTrace>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.0.0-M3</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-	<distributionManagement>
-		<repository>
-			<id>solar-repo</id>
-			<url>https://mvn-repo.platinum-mc.com/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>solar-repo</id>
-			<url>https://mvn-repo.platinum-mc.com/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+	<parent>
+		<groupId>gg.solarmc</groupId>
+		<artifactId>solar-parent</artifactId>
+		<version>0.2.0</version>
+	</parent>
+
+	<artifactId>economyfrontend</artifactId>
+	<version>0.1.0</version>
+
+	<properties>
+		<junit.version>5.7.0</junit.version>
+		<loader.version>0.1.0-SNAPSHOT</loader.version>
+	</properties>
+
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/agpl-3.0-standalone.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<dependencies>
+		<dependency>
+			<groupId>gg.solarmc</groupId>
+			<artifactId>solarpaper-api</artifactId>
+			<version>1.12.2-R0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gg.solarmc.loader</groupId>
+			<artifactId>loader-mod-credits</artifactId>
+			<version>${loader.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 	<repositories>
 		<repository>
 			<id>solar-releases</id>
 			<url>https://mvn-repo.platinum-mc.com/releases</url>
-		</repository>
-		<repository>
-			<id>solar-snapshots</id>
-			<url>https://mvn-repo.platinum-mc.com/snapshots</url>
 		</repository>
 	</repositories>
 </project>
