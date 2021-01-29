@@ -6,7 +6,7 @@ public class SolarCredit extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		getCommand("credits").setExecutor(new CreditCommands());
+		getCommand("credits").setExecutor(new CreditCommands(this));
 	}
 	
 	@Override
