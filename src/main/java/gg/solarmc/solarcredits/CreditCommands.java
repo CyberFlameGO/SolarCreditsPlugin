@@ -12,11 +12,12 @@ import org.slf4j.LoggerFactory;
 import gg.solarmc.loader.DataCenter.TransactionRunner;
 import gg.solarmc.loader.Transaction;
 import gg.solarmc.loader.credits.CreditsKey;
+import gg.solarmc.loader.credits.WithdrawResult;
 
 public class CreditCommands implements CommandExecutor {
 
 	private SolarCredit plugin;
-    private static Logger logger = LoggerFactory.getLogger(CreditCommands.class);
+	private static final Logger logger = LoggerFactory.getLogger(CreditCommands.class);
 
 	public CreditCommands(SolarCredit plugin) {
 		this.plugin = plugin;
@@ -54,10 +55,14 @@ public class CreditCommands implements CommandExecutor {
 					plugin.getServer().getDataCenter().runTransact(new TransactionRunner() {
 						@Override
 						public void runTransactUsing(Transaction transaction) {
-							player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction,
-									BigDecimal.valueOf(amount));
-							receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction,
-									BigDecimal.valueOf(amount));
+							WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE)
+									.withdrawBalance(transaction, BigDecimal.valueOf(amount));
+							if (result.isSuccessful()) {
+								receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction,
+										BigDecimal.valueOf(amount));
+							} else {
+								player.sendMessage("Sorry, you don't have enough money!");
+							}
 						}
 					}).thenRunSync(new Runnable() {
 						@Override
@@ -65,8 +70,7 @@ public class CreditCommands implements CommandExecutor {
 							player.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.error("Failed to deposit " + amount + "for " + receiver.getName() + " from "
-								+ player.getName(), ex);
+						logger.error("Failed to deposit {} into account of {} from {}", amount, receiver, player, ex);
 						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("add")) {
@@ -82,7 +86,7 @@ public class CreditCommands implements CommandExecutor {
 							sender.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.error("Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						logger.error("Failed to add {} into account of {}", amount, receiver, ex);
 						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("remove")) {
@@ -98,7 +102,7 @@ public class CreditCommands implements CommandExecutor {
 							sender.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.error("Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						logger.error("Failed to remove {} into account of {}", amount, receiver, ex);
 						return null;
 					});
 				} else if (subCommand.equalsIgnoreCase("set")) {
@@ -114,7 +118,7 @@ public class CreditCommands implements CommandExecutor {
 							sender.sendMessage("Done!");
 						}
 					}).exceptionally((ex) -> {
-						logger.error("Failed to deposit " + amount + "for " + receiver.getName(), ex);
+						logger.error("Failed to set {} into account of {}", amount, receiver, ex);
 						return null;
 					});
 				}
@@ -130,7 +134,7 @@ public class CreditCommands implements CommandExecutor {
 			return false;
 		}
 		try {
-			double d = Double.parseDouble(strNum);
+			Double.parseDouble(strNum);
 		} catch (NumberFormatException nfe) {
 			return false;
 		}
