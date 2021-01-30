@@ -42,7 +42,7 @@ public class CreditCommands implements CommandExecutor {
 			String subCommand = args[0];
 			String playerName = args[1];
 			String amountString = args[2];
-			if (isNumeric(amountString)) {
+			if (isNumberCorrectly(amountString)) {
 				double amount = Double.parseDouble(amountString);
 				Player receiver = plugin.getServer().getPlayerExact(playerName);
 				if (receiver == null) {
@@ -93,8 +93,13 @@ public class CreditCommands implements CommandExecutor {
 					plugin.getServer().getDataCenter().runTransact(new TransactionRunner() {
 						@Override
 						public void runTransactUsing(Transaction transaction) {
-							receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction,
+							WithdrawResult result = receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction,
 									BigDecimal.valueOf(amount));
+							if (result.isSuccessful()) {
+								sender.sendMessage("Done without errors!");
+							} else {
+								sender.sendMessage("Sorry, he doesn't have enough money!");
+							}
 						}
 					}).thenRunSync(new Runnable() {
 						@Override
@@ -129,12 +134,15 @@ public class CreditCommands implements CommandExecutor {
 		return true;
 	}
 
-	public boolean isNumeric(String strNum) {
+	public boolean isNumberCorrectly(String strNum) {
 		if (strNum == null) {
 			return false;
 		}
 		try {
-			Double.parseDouble(strNum);
+			double d = Double.parseDouble(strNum);
+			if(d < 0) {
+				return false;
+			}
 		} catch (NumberFormatException nfe) {
 			return false;
 		}
