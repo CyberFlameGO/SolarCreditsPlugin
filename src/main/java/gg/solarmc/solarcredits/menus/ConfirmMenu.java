@@ -21,17 +21,21 @@ public class ConfirmMenu {
 
         confirmMenu.getSlot(13).setItem(item);
 
+        ItemStack deny = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+        final ItemMeta denyMeta = deny.getItemMeta();
+        denyMeta.setDisplayName(ChatColor.RED + "Deny");
+        deny.setItemMeta(denyMeta);
+
+        ItemStack confirm = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 5);
+        final ItemMeta confirmMeta = confirm.getItemMeta();
+        confirmMeta.setDisplayName(ChatColor.GREEN + "Confirm");
+        confirm.setItemMeta(confirmMeta);
+
         for (int i = 0; i < confirmMenu.getDimensions().getArea(); i++) {
-            final int row = i % 9;
             final Slot slot = confirmMenu.getSlot(i);
 
-            switch (row) {
+            switch (i % 9) {
                 case 0, 1, 2 -> {
-                    ItemStack deny = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
-                    final ItemMeta meta = deny.getItemMeta();
-                    meta.setDisplayName(ChatColor.RED + "Deny");
-                    deny.setItemMeta(meta);
-
                     slot.setItem(deny);
                     slot.setClickHandler((p, info) -> {
                         p.closeInventory();
@@ -40,11 +44,6 @@ public class ConfirmMenu {
                     });
                 }
                 case 6, 7, 8 -> {
-                    ItemStack confirm = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 5);
-                    final ItemMeta meta = confirm.getItemMeta();
-                    meta.setDisplayName(ChatColor.GREEN + "Confirm");
-                    confirm.setItemMeta(meta);
-
                     slot.setItem(confirm);
                     slot.setClickHandler((p, info) -> {
                         confirmed.accept(true);

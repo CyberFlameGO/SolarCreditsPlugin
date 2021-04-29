@@ -57,6 +57,7 @@ public class RotatingShopMenu {
         final ItemStack balance = new ItemStack(Material.MAP);
         final ItemMeta balMeta = balance.getItemMeta();
         balMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "Balance : " + credits);
+        balance.setItemMeta(balMeta);
 
         creditsShop.getSlot(10).setItem(balance);
 
@@ -65,29 +66,29 @@ public class RotatingShopMenu {
             ItemStack item = new ItemStack(rotatingItem.getMaterial());
 
             final ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             itemMeta.setDisplayName(rotatingItem.getDisplayName() == null ? rotatingItem.getName() : ChatColor.translateAlternateColorCodes('&', rotatingItem.getDisplayName()));
 
             final Slot slot = creditsShop.getSlot(i + 12);
 
             if (playersInteracted.get(i).contains(player.getUniqueId())) {
-                List<String> lore = List.of(ChatColor.GOLD + "Bought");
-                itemMeta.setLore(lore);
+                itemMeta.setLore(List.of(ChatColor.GOLD + "Bought"));
                 item.setItemMeta(itemMeta);
                 slot.setItem(item);
                 continue;
             }
 
             itemMeta.setLore(List.of(ChatColor.AQUA + "Price: " + rotatingItem.getPriceInCredits() + " credits"));
+
             if (rotatingItem.getLore() != null) {
                 final List<String> lore = itemMeta.getLore();
                 lore.addAll(rotatingItem.getLore());
                 itemMeta.setLore(lore.stream().map(it -> ChatColor.translateAlternateColorCodes('&', it)).collect(Collectors.toList()));
             }
 
-            itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             item.setItemMeta(itemMeta);
-
             slot.setItem(item);
+
             int slotId = i;
             slot.setClickHandler((p, info) -> {
                 if (playersInteracted.get(slotId).contains(p.getUniqueId())) {
