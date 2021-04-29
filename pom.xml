@@ -7,7 +7,8 @@
         <groupId>gg.solarmc</groupId>
         <artifactId>solar-parent</artifactId>
         <version>0.5.5</version>
-    </parent>        <!-- ... other settings omitted ... -->
+    </parent>
+
     <profiles>
         <profile>
             <id>downloadSources</id>
@@ -44,12 +45,10 @@
             <artifactId>loader-mod-credits</artifactId>
             <version>${loader.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.ipvp</groupId>
             <artifactId>canvas</artifactId>
             <version>1.6.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -71,13 +70,16 @@
             <id>solar-releases</id>
             <url>https://mvn-repo.platinum-mc.com/releases</url>
         </repository>
-        <repository>
-            <id>solar-snapshots</id>
-            <url>https://mvn-repo.platinum-mc.com/snapshots</url>
-        </repository>
     </repositories>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -100,23 +102,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.ipvp.canvas</pattern>
-                            <shadedPattern>gg.solarmc.economyfrontend.shaded.canvas</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
@@ -129,8 +114,24 @@
                         <version>9.1</version>
                     </dependency>
                 </dependencies>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>org.ipvp:canvas</include>
+                            <include>gg.solarmc.loader:loader-mod-credits</include>
+                            <include>gg.solarmc.loader:loader-core</include>
+                        </includes>
+                    </artifactSet>
+                </configuration>
             </plugin>
-
         </plugins>
     </build>
 </project>
