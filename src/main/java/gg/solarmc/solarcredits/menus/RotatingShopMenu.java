@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 /**
  * itemName:
  *  material:
- *  priceincredits:
- *  command:
- *  message:
- *  displayName: OPTIONAL
- *  lore: OPTIONAL
+ *      priceincredits:
+ *      command:
+ *      message:
+ *      displayName: OPTIONAL
+ *      lore: OPTIONAL
  */
 public class RotatingShopMenu {
     private final Logger LOGGER = LoggerFactory.getLogger(RotatingShopMenu.class);
@@ -104,29 +104,31 @@ public class RotatingShopMenu {
 
     public void openConfirmMenu(Player player, int slotId, ItemStack item, RotatingItem rotatingItem) {
         // player.closeInventory();
-        final ConfirmMenu confirmMenu = new ConfirmMenu(creditsShop, item, (confirmed) -> {
-            if (confirmed) {
-                plugin.getServer().getDataCenter()
-                        .runTransact((transaction) -> {
-                            final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.getPriceInCredits()));
-                            if (result.isSuccessful()) {
-                                // Bukkit.dispatchCommand(console, rotatingItem.getCommand());
-                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.getCommand());
-                                player.sendMessage(rotatingItem.getMessage());
-                            } else {
-                                player.sendMessage("Sorry, you don't have enough money!");
-                            }
-                        })
-                        .exceptionally((ex) -> {
-                            LOGGER.error("Exception in Credits Shop Transaction", ex);
-                            return null;
-                        });
+        final ConfirmMenu confirmMenu = new ConfirmMenu(item.getItemMeta().getDisplayName(), item, creditsShop,
+                (confirmed) -> {
+                    if (confirmed) {
+                        plugin.getServer().getDataCenter()
+                                .runTransact((transaction) -> {
+                                    final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.getPriceInCredits()));
+                                    if (result.isSuccessful()) {
+                                        // Bukkit.dispatchCommand(console, rotatingItem.getCommand());
+                                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.getCommand());
+                                    } else {
+                                        player.sendMessage("Sorry, you don't have enough money!");
+                                    }
+                                })
+                                .thenRunSync(() -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.getMessage())))
+                                .exceptionally((ex) -> {
+                                    LOGGER.error("Exception in Credits Shop Transaction", ex);
+                                    return null;
+                                });
 
-                final Set<UUID> uuids = playersInteracted.get(slotId);
-                uuids.add(player.getUniqueId());
-                playersInteracted.set(slotId, uuids);
-            }
-        });
+                        final Set<UUID> uuids = playersInteracted.get(slotId);
+                        uuids.add(player.getUniqueId());
+                        playersInteracted.set(slotId, uuids);
+                    }
+                }
+        );
         confirmMenu.open(player);
     }
 

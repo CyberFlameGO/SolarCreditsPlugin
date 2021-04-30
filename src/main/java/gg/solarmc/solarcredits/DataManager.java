@@ -1,5 +1,6 @@
 package gg.solarmc.solarcredits;
 
+import gg.solarmc.solarcredits.menus.RotatingShopMenu;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -29,8 +30,10 @@ public class DataManager {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             this.config.setDefaults(defaultConfig);
         }
-        if (plugin.shop != null)
-            plugin.shop.loadItems();
+
+        final RotatingShopMenu shop = plugin.getShop();
+        if (shop != null)
+            shop.loadItems();
     }
 
     public FileConfiguration getConfig() {

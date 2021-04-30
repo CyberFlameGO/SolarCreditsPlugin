@@ -14,9 +14,9 @@ import java.util.function.Consumer;
 public class ConfirmMenu {
     private final Menu confirmMenu;
 
-    public ConfirmMenu(Menu menu, ItemStack item, Consumer<Boolean> confirmed) {
+    public ConfirmMenu(String title, ItemStack item, Menu menuBefore, Consumer<Boolean> confirmed) {
         this.confirmMenu = ChestMenu.builder(3)
-                .title(item.getItemMeta().getDisplayName())
+                .title(title)
                 .build();
 
         confirmMenu.getSlot(13).setItem(item);
@@ -40,7 +40,8 @@ public class ConfirmMenu {
                     slot.setClickHandler((p, info) -> {
                         p.closeInventory();
                         confirmed.accept(false);
-                        menu.open(p);
+                        if (menuBefore != null)
+                            menuBefore.open(p);
                     });
                 }
                 case 6, 7, 8 -> {

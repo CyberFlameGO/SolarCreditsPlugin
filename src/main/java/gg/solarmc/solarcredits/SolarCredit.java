@@ -1,15 +1,19 @@
 package gg.solarmc.solarcredits;
 
 import gg.solarmc.solarcredits.menus.RotatingShopMenu;
+import okhttp3.OkHttpClient;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SolarCredit extends JavaPlugin {
-    public RotatingShopMenu shop;
-    public DataManager manager;
+    private OkHttpClient okHttpClient;
+    private DataManager manager;
+    private RotatingShopMenu shop;
+
 
     @Override
     public void onEnable() {
+        okHttpClient = new OkHttpClient();
         manager = new DataManager(this);
         shop = new RotatingShopMenu(this);
         getLogger().info("SolarCredits Started");
@@ -21,9 +25,16 @@ public class SolarCredit extends JavaPlugin {
 
     }
 
+    public RotatingShopMenu getShop() {
+        return shop;
+    }
+
     @Override
     public FileConfiguration getConfig() {
         return manager.getConfig();
     }
 
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
+    }
 }
