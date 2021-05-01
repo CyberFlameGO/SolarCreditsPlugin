@@ -10,8 +10,9 @@ import java.io.InputStreamReader;
 
 public class DataManager {
     private final SolarCredit plugin;
-    private FileConfiguration config;
-    private File configFile;
+    private final String rotatingShopFilePath = "rotatingshop.yml";
+    private FileConfiguration rotatingShop;
+    private File rotatingShopFile;
 
     public DataManager(SolarCredit plugin) {
         this.plugin = plugin;
@@ -20,15 +21,15 @@ public class DataManager {
     }
 
     public void reloadConfig() {
-        if (this.configFile == null)
-            this.configFile = new File(this.plugin.getDataFolder(), "rotatingshop.yml");
+        if (this.rotatingShopFile == null)
+            this.rotatingShopFile = new File(this.plugin.getDataFolder(), rotatingShopFilePath);
 
-        this.config = YamlConfiguration.loadConfiguration(this.configFile);
+        this.rotatingShop = YamlConfiguration.loadConfiguration(this.rotatingShopFile);
 
-        InputStream defaultStream = this.plugin.getResource("rotatingshop.yml");
+        InputStream defaultStream = this.plugin.getResource(rotatingShopFilePath);
         if (defaultStream != null) {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-            this.config.setDefaults(defaultConfig);
+            this.rotatingShop.setDefaults(defaultConfig);
         }
 
         final RotatingShopMenu shop = plugin.getShop();
@@ -36,10 +37,10 @@ public class DataManager {
             shop.loadItems();
     }
 
-    public FileConfiguration getConfig() {
-        if (this.config == null)
+    public FileConfiguration getRotatingShop() {
+        if (this.rotatingShop == null)
             reloadConfig();
-        return this.config;
+        return this.rotatingShop;
     }
 
 
@@ -58,10 +59,12 @@ public class DataManager {
     */
 
     public void saveDefaultConfig() {
-        if (this.configFile == null)
-            this.configFile = new File(this.plugin.getDataFolder(), "rotatingshop.yml");
+        plugin.saveDefaultConfig();
 
-        if (!this.configFile.exists())
-            this.plugin.saveResource("rotatingshop.yml", false);
+        if (this.rotatingShopFile == null)
+            this.rotatingShopFile = new File(this.plugin.getDataFolder(), rotatingShopFilePath);
+
+        if (!this.rotatingShopFile.exists())
+            this.plugin.saveResource(rotatingShopFilePath, false);
     }
 }

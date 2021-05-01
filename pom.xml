@@ -139,6 +139,7 @@
                             <include>org.ipvp:canvas</include>
                             <include>gg.solarmc.loader:loader-mod-credits</include>
                             <include>gg.solarmc.loader:loader-core</include>
+                            <include>com.squareup.okhttp3:okhttp3</include>
                         </includes>
                     </artifactSet>
                 </configuration>

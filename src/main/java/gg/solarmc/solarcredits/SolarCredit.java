@@ -31,7 +31,7 @@ public class SolarCredit extends JavaPlugin {
 
     @Override
     public FileConfiguration getConfig() {
-        return manager.getConfig();
+        return manager.getRotatingShop();
     }
 
     public OkHttpClient getOkHttpClient() {
