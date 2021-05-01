@@ -32,8 +32,13 @@ public class CreditCommands implements CommandExecutor {
     private static final Logger logger = LoggerFactory.getLogger(CreditCommands.class);
     private final JSONParser parser = new JSONParser();
 
+    // TODO: Tebex Secret
+    private final String X_TEBEX_SECRET;
+    private final String GIFT_CARDS = "https://plugin.tebex.io/gift-cards";
+
     public CreditCommands(SolarCredit plugin) {
         this.plugin = plugin;
+        X_TEBEX_SECRET = plugin.getConfig().getString("tebex.secret");
     }
 
     @Override
@@ -70,6 +75,12 @@ public class CreditCommands implements CommandExecutor {
                         ConfirmMenu confirmMenu = new ConfirmMenu("Confirm Spend", giftCard, null,
                                 confirmed -> {
                                     if (confirmed) {
+                                        if (X_TEBEX_SECRET == null) {
+                                            logger.warn("X_TEBEX_SECRET is null: Please set it in the config file");
+                                            sender.sendMessage("X_TEBEX_SECRET is null: Aborting processes ahead");
+                                            return;
+                                        }
+
                                         plugin.getServer().getDataCenter()
                                                 .runTransact(transaction -> {
                                                     WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE)
@@ -174,29 +185,26 @@ public class CreditCommands implements CommandExecutor {
      * expiresAt yyyy-mm-dd hh:mm:ss
      * amount Currency Value of the gift card
      */
-    public void createGiftCard(Player player, double amount, /*String expiresAt,*/ Consumer<String> giftCardCode) {
-        // TODO: Tebex Secret
-        String X_TEBEX_SECRET = "";
-        String CREATE_GIFT_CARD = "https://plugin.tebex.io/gift-cards";
-
+    public void createGiftCard(CommandSender sender, double amount, /*String expiresAt,*/ Consumer<String> giftCardCode) {
         try {
             RequestBody body = new FormBody.Builder()
                     .add("amount", String.valueOf(amount))
                     // .add("expires_at", expiresAt)
                     .build();
             Request request = new Request.Builder()
-                    .url(CREATE_GIFT_CARD)
+                    .url(GIFT_CARDS)
                     .addHeader("X-Tebex-Secret", X_TEBEX_SECRET)
                     .post(body)
                     .build();
 
             try (Response response = plugin.getOkHttpClient().newCall(request).execute()) {
                 if (response.code() == 403) {
+                    Player player = (Player) sender;
                     plugin.getServer().getDataCenter()
-                            .runTransact(transaction -> player.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction, BigDecimal.valueOf(amount)))
-                            .thenRunSync(() -> player.sendMessage(ChatColor.RED + "Something went wrong, Please try again later!"))
+                            .runTransact(transaction -> (player).getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction, BigDecimal.valueOf(amount)))
+                            .thenRunSync(() -> sender.sendMessage(ChatColor.RED + "Something went wrong, Please try again later!"))
                             .exceptionally(e -> {
-                                logger.error("Failed to add {} into account of {}", amount, player.getName(), e);
+                                logger.error("Failed to add {} into account of {}", amount, sender.getName(), e);
                                 return null;
                             });
                     return;
@@ -205,7 +213,7 @@ public class CreditCommands implements CommandExecutor {
                 JSONObject json = (JSONObject) parser.parse(response.body().string());
                 JSONObject data = (JSONObject) json.get("data");
                 String code = (String) data.get("code");
-                logger.info("A gift-card was created by {} : ${}", player.getName(), amount);
+                logger.info("A gift-card was created by {} : ${}", sender.getName(), amount);
                 giftCardCode.accept(code);
             } catch (ParseException ex) {
                 logger.error("Error in parsing response", ex);
