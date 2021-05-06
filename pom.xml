@@ -6,7 +6,7 @@
     <parent>
         <groupId>gg.solarmc</groupId>
         <artifactId>solar-parent</artifactId>
-        <version>0.5.5</version>
+        <version>0.5.6</version>
     </parent>
 
     <profiles>
@@ -35,12 +35,14 @@
         </license>
     </licenses>
     <dependencies>
+        <!-- https://github.com/SolarMC-Dev/SolarPaper-API/blob/master/pom.xml -->
         <dependency>
             <groupId>gg.solarmc</groupId>
             <artifactId>solarpaper-api</artifactId>
             <version>1.1.5</version>
         </dependency>
 
+        <!-- https://github.com/SolarMC-Dev/DataLoader/tree/master/mod-credits -->
         <dependency>
             <groupId>gg.solarmc.loader</groupId>
             <artifactId>loader-mod-credits</artifactId>
@@ -54,7 +56,6 @@
             <version>1.6.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
         <!-- https://github.com/square/okhttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -80,6 +81,10 @@
         <repository>
             <id>solar-releases</id>
             <url>https://mvn-repo.platinum-mc.com/releases</url>
+        </repository>
+        <repository>
+            <id>solar-snapshots</id>
+            <url>https://mvn-repo.platinum-mc.com/snapshots</url>
         </repository>
     </repositories>
 
@@ -110,21 +115,7 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>9.1</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm-commons</artifactId>
-                        <version>9.1</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -137,9 +128,7 @@
                     <artifactSet>
                         <includes>
                             <include>org.ipvp:canvas</include>
-                            <include>gg.solarmc.loader:loader-mod-credits</include>
-                            <include>gg.solarmc.loader:loader-core</include>
-                            <include>com.squareup.okhttp3:okhttp3</include>
+                            <include>com.squareup.okhttp3:okhttp</include>
                         </includes>
                     </artifactSet>
                 </configuration>

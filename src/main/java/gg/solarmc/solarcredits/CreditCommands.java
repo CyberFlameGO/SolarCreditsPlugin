@@ -32,9 +32,7 @@ public class CreditCommands implements CommandExecutor {
     private static final Logger logger = LoggerFactory.getLogger(CreditCommands.class);
     private final JSONParser parser = new JSONParser();
 
-    // TODO: Tebex Secret
     private final String X_TEBEX_SECRET;
-    private final String GIFT_CARDS = "https://plugin.tebex.io/gift-cards";
 
     public CreditCommands(SolarCredit plugin) {
         this.plugin = plugin;
@@ -180,7 +178,6 @@ public class CreditCommands implements CommandExecutor {
         return true;
     }
 
-
     /**
      * expiresAt yyyy-mm-dd hh:mm:ss
      * amount Currency Value of the gift card
@@ -191,6 +188,7 @@ public class CreditCommands implements CommandExecutor {
                     .add("amount", String.valueOf(amount))
                     // .add("expires_at", expiresAt)
                     .build();
+            String GIFT_CARDS = "https://plugin.tebex.io/gift-cards";
             Request request = new Request.Builder()
                     .url(GIFT_CARDS)
                     .addHeader("X-Tebex-Secret", X_TEBEX_SECRET)
@@ -223,7 +221,6 @@ public class CreditCommands implements CommandExecutor {
         }
     }
 
-
     public boolean isNumberCorrectly(String strNum) {
         if (strNum == null)
             return false;
@@ -237,5 +234,4 @@ public class CreditCommands implements CommandExecutor {
         }
         return true;
     }
-
 }
