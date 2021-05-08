@@ -63,6 +63,13 @@
             <version>4.9.1</version>
         </dependency>
 
+        <!-- https://github.com/fangyidong/json-simple -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -115,6 +122,7 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
@@ -129,8 +137,25 @@
                         <includes>
                             <include>org.ipvp:canvas</include>
                             <include>com.squareup.okhttp3:okhttp</include>
+                            <include>com.squareup.okio:okio</include>
+                            <include>org.jetbrains.kotlin:kotlin-stdlib</include>
+                            <include>com.googlecode.json-simple:json-simple</include>
                         </includes>
                     </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>okhttp3</pattern>
+                            <shadedPattern>gg.solarmc.solarcredits.okhttp3</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>okio</pattern>
+                            <shadedPattern>gg.solarmc.solarcredits.okio</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.json</pattern>
+                            <shadedPattern>gg.solarmc.solarcredits.json</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
             </plugin>
         </plugins>

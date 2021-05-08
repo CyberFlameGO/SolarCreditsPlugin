@@ -15,9 +15,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jooq.tools.json.JSONObject;
-import org.jooq.tools.json.JSONParser;
-import org.jooq.tools.json.ParseException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,6 @@ public class CreditCommands implements CommandExecutor {
         String subCommand = args[0];
         if (args.length == 1) {
             if (sender instanceof Player player) {
-
                 if (subCommand.equalsIgnoreCase("reload")) { // credits reload
                     if (player.hasPermission("credits.reload"))
                         plugin.reloadConfig();
@@ -208,17 +207,19 @@ public class CreditCommands implements CommandExecutor {
                     return;
                 }
 
-                JSONObject json = (JSONObject) parser.parse(response.body().string());
-                JSONObject data = (JSONObject) json.get("data");
-                String code = (String) data.get("code");
+                String code = parseJsonAndGetCode(response.body().string());
                 logger.info("A gift-card was created by {} : ${}", sender.getName(), amount);
                 giftCardCode.accept(code);
-            } catch (ParseException ex) {
-                logger.error("Error in parsing response", ex);
             }
-        } catch (IOException ex) {
+        } catch (IOException | ParseException ex) {
+            sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later");
             logger.error("Could not create the giftcard ", ex);
         }
+    }
+
+    private String parseJsonAndGetCode(String json) throws ParseException {
+        final JSONObject data = (JSONObject) ((JSONObject) parser.parse(json)).get("data");
+        return (String) data.get("code");
     }
 
     public boolean isNumberCorrectly(String strNum) {
