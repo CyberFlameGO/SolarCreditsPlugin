@@ -1,5 +1,6 @@
 package gg.solarmc.solarcredits;
 
+import com.google.gson.JsonParser;
 import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.menus.ConfirmMenu;
@@ -16,9 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +29,6 @@ public class CreditCommands implements CommandExecutor {
 
     private final SolarCredit plugin;
     private static final Logger logger = LoggerFactory.getLogger(CreditCommands.class);
-    private final JSONParser parser = new JSONParser();
 
     private final String X_TEBEX_SECRET;
 
@@ -213,15 +210,17 @@ public class CreditCommands implements CommandExecutor {
                 logger.info("A gift-card was created by {} : ${}", sender.getName(), amount);
                 giftCardCode.accept(code);
             }
-        } catch (IOException | ParseException ex) {
+        } catch (IOException ex) {
             sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later");
             logger.error("Could not create the giftcard ", ex);
         }
     }
 
-    private String parseJsonAndGetCode(String json) throws ParseException {
-        final JSONObject data = (JSONObject) ((JSONObject) parser.parse(json)).get("data");
-        return (String) data.get("code");
+    private String parseJsonAndGetCode(String json) {
+        return JsonParser.parseString(json)
+                .getAsJsonObject().get("data")
+                .getAsJsonObject().get("code")
+                .getAsString();
     }
 
     public boolean isNumberCorrectly(String strNum) {
