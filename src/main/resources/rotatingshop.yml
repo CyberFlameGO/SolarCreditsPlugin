@@ -1,3 +1,6 @@
+tebex:
+  secret: ""
+
 items:
   Sword:
     material: diamond_sword

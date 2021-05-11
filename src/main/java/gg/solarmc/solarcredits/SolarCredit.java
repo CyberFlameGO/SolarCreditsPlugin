@@ -1,22 +1,28 @@
 package gg.solarmc.solarcredits;
 
+import gg.solarmc.solarcredits.config.Config;
+import gg.solarmc.solarcredits.config.ConfigManager;
+import gg.solarmc.solarcredits.config.RotatingShopConfig;
 import gg.solarmc.solarcredits.menus.RotatingShopMenu;
 import okhttp3.OkHttpClient;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SolarCredit extends JavaPlugin {
     private OkHttpClient okHttpClient;
-    private DataManager manager;
     private RotatingShopMenu shop;
+
     private String TEBEX_SECRET;
+    private final String rotatingShopFilePath = "rotatingshop.yml";
 
     @Override
     public void onEnable() {
         okHttpClient = new OkHttpClient();
-        manager = new DataManager(this);
-        shop = new RotatingShopMenu(this);
-        TEBEX_SECRET = this.getConfig().getString("tebex.secret");
+        ConfigManager<RotatingShopConfig> manager = ConfigManager.create(this.getDataFolder().toPath(), rotatingShopFilePath, RotatingShopConfig.class);
+        TEBEX_SECRET = manager.getConfigData().tebexSecret();
+
+        Config config = new Config(manager);
+        config.loadItems();
+        shop = new RotatingShopMenu(this, config);
 
         getLogger().info("SolarCredits Started");
         getCommand("credits").setExecutor(new CreditCommands(this, TEBEX_SECRET));
@@ -29,11 +35,6 @@ public class SolarCredit extends JavaPlugin {
 
     public RotatingShopMenu getShop() {
         return shop;
-    }
-
-    @Override
-    public FileConfiguration getConfig() {
-        return manager.getRotatingShop();
     }
 
     public OkHttpClient getOkHttpClient() {

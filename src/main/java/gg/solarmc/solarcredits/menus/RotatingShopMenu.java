@@ -4,6 +4,7 @@ import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.RotatingItem;
 import gg.solarmc.solarcredits.SolarCredit;
+import gg.solarmc.solarcredits.config.Config;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,23 +24,23 @@ import java.util.stream.Collectors;
 
 /**
  * itemName:
- *  material:
- *      priceincredits:
- *      command:
- *      message:
- *      displayName: OPTIONAL
- *      lore: OPTIONAL
+ * material:
+ * priceincredits:
+ * command:
+ * message:
+ * displayName: OPTIONAL
+ * lore: OPTIONAL
  */
 public class RotatingShopMenu {
     private final Logger LOGGER = LoggerFactory.getLogger(RotatingShopMenu.class);
     private final SolarCredit plugin;
     private final Menu creditsShop;
-    private final List<RotatingItem> rotatingItems = new ArrayList<>();
-    private final List<Set<UUID>> playersInteracted = new ArrayList<>();
-
     private long lastDay;
 
-    public RotatingShopMenu(SolarCredit plugin) {
+    private final List<RotatingItem> rotatingItems;
+    private final List<Set<UUID>> playersInteracted = new ArrayList<>();
+
+    public RotatingShopMenu(SolarCredit plugin, Config config) {
         for (int i = 0; i < 4; i++) {
             playersInteracted.add(new HashSet<>());
         }
@@ -47,7 +48,8 @@ public class RotatingShopMenu {
         creditsShop = ChestMenu.builder(3)
                 .title("Credits Shop")
                 .build();
-        loadItems();
+
+        rotatingItems = config.getRotatingItems();
     }
 
     public void openShop(Player player) {
@@ -130,33 +132,6 @@ public class RotatingShopMenu {
                 }
         );
         confirmMenu.open(player);
-    }
-
-    public void loadItems() {
-        plugin.getConfig().getConfigurationSection("items").getKeys(false).forEach(key -> {
-            try {
-                String name = key;
-
-                key = "items." + key;
-                Material material = Material.matchMaterial(plugin.getConfig().getString(key + ".material"));
-                double price = plugin.getConfig().getDouble(key + ".priceincredits");
-                String command = plugin.getConfig().getString(key + ".command").replaceFirst("^/", "");
-                String message = plugin.getConfig().getString(key + ".message");
-                String displayName = null;
-                List<String> lore = null;
-
-                if (plugin.getConfig().contains(key + ".displayName")) {
-                    displayName = plugin.getConfig().getString(key + ".displayName");
-                }
-                if (plugin.getConfig().contains(key + ".lore")) {
-                    lore = plugin.getConfig().getStringList(key + ".lore");
-                }
-
-                rotatingItems.add(new RotatingItem(name, material, price, command, message, displayName, lore));
-            } catch (NullPointerException e) {
-                throw new NullPointerException("Missing key from " + key + " in rotatingshop.yml");
-            }
-        });
     }
 
     public RotatingItem[] getItems() {
