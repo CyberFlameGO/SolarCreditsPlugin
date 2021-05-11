@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -34,9 +35,9 @@ public class CreditCommands implements CommandExecutor {
 
     private final String X_TEBEX_SECRET;
 
-    public CreditCommands(SolarCredit plugin) {
+    public CreditCommands(SolarCredit plugin, @NotNull String TebexSecret) {
         this.plugin = plugin;
-        X_TEBEX_SECRET = plugin.getConfig().getString("tebex.secret");
+        this.X_TEBEX_SECRET = TebexSecret;
     }
 
     @Override
@@ -72,12 +73,6 @@ public class CreditCommands implements CommandExecutor {
                         ConfirmMenu confirmMenu = new ConfirmMenu("Confirm Spend", giftCard, null,
                                 confirmed -> {
                                     if (confirmed) {
-                                        if (X_TEBEX_SECRET == null) {
-                                            logger.warn("X_TEBEX_SECRET is null: Please set it in the config file");
-                                            sender.sendMessage("X_TEBEX_SECRET is null: Aborting processes ahead");
-                                            return;
-                                        }
-
                                         plugin.getServer().getDataCenter()
                                                 .runTransact(transaction -> {
                                                     WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE)
@@ -161,8 +156,7 @@ public class CreditCommands implements CommandExecutor {
                 } else if (subCommand.equalsIgnoreCase("set")) { // credits set <> <>
                     plugin.getServer().getDataCenter()
                             .runTransact(transaction -> {
-                                // TODO Set Balance
-                                // receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).setBalance(transaction, BigDecimal.valueOf(amount));
+                                receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).setBalance(transaction, BigDecimal.valueOf(amount));
                             })
                             .thenRunSync(() -> sender.sendMessage("Done!"))
                             .exceptionally((ex) -> {

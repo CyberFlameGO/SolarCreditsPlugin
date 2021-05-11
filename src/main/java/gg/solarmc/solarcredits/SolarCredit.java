@@ -9,15 +9,17 @@ public class SolarCredit extends JavaPlugin {
     private OkHttpClient okHttpClient;
     private DataManager manager;
     private RotatingShopMenu shop;
-
+    private String TEBEX_SECRET;
 
     @Override
     public void onEnable() {
         okHttpClient = new OkHttpClient();
         manager = new DataManager(this);
         shop = new RotatingShopMenu(this);
+        TEBEX_SECRET = this.getConfig().getString("tebex.secret");
+
         getLogger().info("SolarCredits Started");
-        getCommand("credits").setExecutor(new CreditCommands(this));
+        getCommand("credits").setExecutor(new CreditCommands(this, TEBEX_SECRET));
     }
 
     @Override
