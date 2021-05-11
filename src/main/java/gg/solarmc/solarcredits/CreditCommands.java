@@ -129,40 +129,48 @@ public class CreditCommands implements CommandExecutor {
                                 return null;
                             });
                 } else if (subCommand.equalsIgnoreCase("add")) { // credits add <> <>
-                    plugin.getServer().getDataCenter()
-                            .runTransact(transaction -> receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
-                                    .depositBalance(transaction, BigDecimal.valueOf(amount)))
-                            .thenRunSync(() -> sender.sendMessage("Done!"))
-                            .exceptionally((ex) -> {
-                                logger.error("Failed to add {} into account of {}", amount, receiver, ex);
-                                return null;
-                            });
+                    if (sender.hasPermission("credits.add")) {
+                        plugin.getServer().getDataCenter()
+                                .runTransact(transaction -> receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
+                                        .depositBalance(transaction, BigDecimal.valueOf(amount)))
+                                .thenRunSync(() -> sender.sendMessage("Done!"))
+                                .exceptionally((ex) -> {
+                                    logger.error("Failed to add {} into account of {}", amount, receiver, ex);
+                                    return null;
+                                });
+                    } else
+                        sender.sendMessage("You don't have permission to do this !!");
                 } else if (subCommand.equalsIgnoreCase("remove")) { // credits remove <> <>
-                    plugin.getServer().getDataCenter()
-                            .runTransact(transaction -> {
-                                WithdrawResult result = receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
-                                        .withdrawBalance(transaction, BigDecimal.valueOf(amount));
-                                if (result.isSuccessful()) {
-                                    sender.sendMessage("Done without errors!");
-                                } else {
-                                    sender.sendMessage("Sorry, he doesn't have enough money!");
-                                }
-                            })
-                            .thenRunSync(() -> sender.sendMessage("Done!"))
-                            .exceptionally((ex) -> {
-                                logger.error("Failed to remove {} into account of {}", amount, receiver, ex);
-                                return null;
-                            });
+                    if (sender.hasPermission("credits.remove")) {
+                        plugin.getServer().getDataCenter()
+                                .runTransact(transaction -> {
+                                    WithdrawResult result = receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
+                                            .withdrawBalance(transaction, BigDecimal.valueOf(amount));
+                                    if (result.isSuccessful()) {
+                                        sender.sendMessage("Done without errors!");
+                                    } else {
+                                        sender.sendMessage("Sorry, he doesn't have enough money!");
+                                    }
+                                })
+                                .thenRunSync(() -> sender.sendMessage("Done!"))
+                                .exceptionally((ex) -> {
+                                    logger.error("Failed to remove {} into account of {}", amount, receiver, ex);
+                                    return null;
+                                });
+                    } else
+                        sender.sendMessage("You don't have permission to do this !!");
+
                 } else if (subCommand.equalsIgnoreCase("set")) { // credits set <> <>
-                    plugin.getServer().getDataCenter()
-                            .runTransact(transaction -> {
-                                receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).setBalance(transaction, BigDecimal.valueOf(amount));
-                            })
-                            .thenRunSync(() -> sender.sendMessage("Done!"))
-                            .exceptionally((ex) -> {
-                                logger.error("Failed to set {} into account of {}", amount, receiver, ex);
-                                return null;
-                            });
+                    if (sender.hasPermission("credits.set")) {
+                        plugin.getServer().getDataCenter()
+                                .runTransact(transaction -> receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).setBalance(transaction, BigDecimal.valueOf(amount)))
+                                .thenRunSync(() -> sender.sendMessage("Done!"))
+                                .exceptionally((ex) -> {
+                                    logger.error("Failed to set {} into account of {}", amount, receiver, ex);
+                                    return null;
+                                });
+                    } else
+                        sender.sendMessage("You don't have permission to do this !!");
                 }
             } else {
                 sender.sendMessage("Sorry, but " + amountString + " is not a double!");
