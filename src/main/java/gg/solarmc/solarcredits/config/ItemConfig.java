@@ -8,26 +8,26 @@ import java.util.List;
 public interface ItemConfig {
 
     @ConfKey("material")
-    @ConfDefault.DefaultString("")
+    @ConfDefault.DefaultString("diamond_sword")
     String material();
 
     @ConfKey("priceincredits")
-    @ConfDefault.DefaultDouble(-1)
+    @ConfDefault.DefaultDouble(5)
     double priceInCredits();
 
     @ConfKey("command")
-    @ConfDefault.DefaultString("")
+    @ConfDefault.DefaultString("give @p diamond_sword")
     String command();
 
     @ConfKey("message")
-    @ConfDefault.DefaultString("")
+    @ConfDefault.DefaultString("You were given a Diamond Sword")
     String message();
 
     @ConfKey("displayName")
-    @ConfDefault.DefaultString("")
+    @ConfDefault.DefaultString("&l&cA Normal Sword")
     String displayName();
 
     @ConfKey("lore")
-    @ConfDefault.DefaultStrings({})
+    @ConfDefault.DefaultStrings({"&aYes", "Use this sword to kill players"})
     List<String> lore();
 }

@@ -1,7 +1,5 @@
 package gg.solarmc.solarcredits.config;
 
-import gg.solarmc.solarcredits.RotatingItem;
-import org.bukkit.Material;
 import space.arim.dazzleconf.ConfigurationFactory;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.dazzleconf.error.ConfigFormatSyntaxException;
@@ -14,8 +12,6 @@ import space.arim.dazzleconf.helper.ConfigurationHelper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public final class ConfigManager<C> {
     private final ConfigurationHelper<C> configHelper;
@@ -31,7 +27,7 @@ public final class ConfigManager<C> {
                 .build();
         ConfigurationFactory<C> configFactory = SnakeYamlConfigurationFactory.create(
                 configClass,
-                ConfigurationOptions.defaults(), // change this if desired
+                ConfigurationOptions.defaults(),
                 yamlOptions);
         return new ConfigManager<>(new ConfigurationHelper<>(configFolder, fileName, configFactory));
     }
@@ -41,7 +37,6 @@ public final class ConfigManager<C> {
             configData = configHelper.reloadConfigData();
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
-
         } catch (ConfigFormatSyntaxException ex) {
             configData = configHelper.getFactory().loadDefaults();
             System.err.println("The yaml syntax in your configuration is invalid. "
