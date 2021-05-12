@@ -55,13 +55,16 @@ public class RotatingShopMenu {
     public void openShop(Player player) {
         RotatingItem[] items = getItems();
 
-        final BigDecimal credits = player.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
-        final ItemStack balance = new ItemStack(Material.MAP);
-        final ItemMeta balMeta = balance.getItemMeta();
-        balMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "Balance : " + credits);
-        balance.setItemMeta(balMeta);
+        creditsShop.getSlot(10)//.setItem(balance);
+                .setItemTemplate(p -> {
+                    BigDecimal credits = p.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
+                    ItemStack balance = new ItemStack(Material.MAP);
+                    ItemMeta balMeta = balance.getItemMeta();
+                    balMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "Balance : " + credits);
+                    balance.setItemMeta(balMeta);
+                    return balance;
+                });
 
-        creditsShop.getSlot(10).setItem(balance);
 
         for (int i = 0; i < items.length; i++) {
             final RotatingItem rotatingItem = items[i];
