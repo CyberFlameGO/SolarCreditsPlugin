@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class ConfigTest {
     @Test
     void shouldBeEqualToConfig() {
@@ -17,6 +19,13 @@ public class ConfigTest {
         config.loadItems();
         final String name = config.getRotatingItems().get(0).getName();
 
-        Assertions.assertEquals("Item", name);
+        final RotatingShopConfig data = manager.getConfigData();
+
+        Assertions.assertAll(
+                () -> assertEquals("ABCxyz", data.tebexSecret()),
+                () -> assertEquals("Item", name),
+                () -> assertEquals("diamond_sword", data.items().get("Item").material())
+        );
+
     }
 }

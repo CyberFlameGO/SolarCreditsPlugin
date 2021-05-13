@@ -17,6 +17,7 @@ public class Config {
     }
 
     public void loadItems() {
+        manager.reloadConfig();
         Map<String, @SubSection ItemConfig> items = manager.getConfigData().items();
 
         items.forEach((key, value) -> {
