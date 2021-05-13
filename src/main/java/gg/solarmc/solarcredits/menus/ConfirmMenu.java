@@ -16,36 +16,19 @@ import java.util.function.Consumer;
 public class ConfirmMenu {
     private final Menu confirmMenu;
 
-    public ConfirmMenu(String title, ItemStack item, Menu menuBefore, Consumer<Boolean> confirmed) {
-        this.confirmMenu = ChestMenu.builder(3)
-                .title(title)
-                .build();
-
-        for (int i = 0; i < confirmMenu.getDimensions().getArea(); i++) {
-            final Slot slot = confirmMenu.getSlot(i);
-
-            switch (i % 9) {
-                case 0, 1, 2 -> slot.setClickHandler((p, info) -> {
-                    p.closeInventory();
-                    confirmed.accept(false);
-                    if (menuBefore != null)
-                        menuBefore.open(p);
-                });
-                case 6, 7, 8 -> slot.setClickHandler((p, info) -> {
-                    confirmed.accept(true);
-                    p.closeInventory();
-                });
-            }
-        }
+    private ConfirmMenu(Menu menu) {
+        this.confirmMenu = menu;
     }
 
     public void open(Player player) {
         confirmMenu.open(player);
     }
 
-    static class Builder {
+    public static class Builder {
         private final ChestMenu.Builder builder;
         private final ItemStack item;
+        private Consumer<Boolean> confirmed;
+        private Menu menuBefore;
 
         public Builder(ItemStack item) {
             this.builder = ChestMenu.builder(3);
@@ -57,7 +40,17 @@ public class ConfirmMenu {
             return this;
         }
 
-        public Menu build() {
+        public Builder setMenuBefore(Menu menu) {
+            this.menuBefore = menu;
+            return this;
+        }
+
+        public Builder setOnConfirm(Consumer<Boolean> confirmed) {
+            this.confirmed = confirmed;
+            return this;
+        }
+
+        public ConfirmMenu build() {
             Menu confirmMenu = builder.build();
 
             ItemStack deny = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
@@ -80,7 +73,24 @@ public class ConfirmMenu {
                     .build();
             mask.apply(confirmMenu);
 
-            return confirmMenu;
+            for (int i = 0; i < confirmMenu.getDimensions().getArea(); i++) {
+                final Slot slot = confirmMenu.getSlot(i);
+
+                switch (i % 9) {
+                    case 0, 1, 2 -> slot.setClickHandler((p, info) -> {
+                        p.closeInventory();
+                        confirmed.accept(false);
+                        if (menuBefore != null)
+                            menuBefore.open(p);
+                    });
+                    case 6, 7, 8 -> slot.setClickHandler((p, info) -> {
+                        confirmed.accept(true);
+                        p.closeInventory();
+                    });
+                }
+            }
+
+            return new ConfirmMenu(confirmMenu);
         }
     }
 }

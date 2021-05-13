@@ -67,27 +67,30 @@ public class CreditCommands implements CommandExecutor {
                         giftMeta.setLore(List.of(ChatColor.AQUA + "$" + amount));
                         giftCard.setItemMeta(giftMeta);
 
-                        ConfirmMenu confirmMenu = new ConfirmMenu("Confirm Spend", giftCard, null,
-                                confirmed -> {
-                                    if (confirmed) {
-                                        plugin.getServer().getDataCenter()
-                                                .runTransact(transaction -> {
-                                                    WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE)
-                                                            .withdrawBalance(transaction, BigDecimal.valueOf(amount));
+                        Consumer<Boolean> confirmed = c -> {
+                            if (c) {
+                                plugin.getServer().getDataCenter()
+                                        .runTransact(transaction -> {
+                                            WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE)
+                                                    .withdrawBalance(transaction, BigDecimal.valueOf(amount));
 
-                                                    if (result.isSuccessful()) {
-                                                        createGiftCard(player, amount, giftCardCode -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aGift Card Code : &r&l&6" + giftCardCode)));
-                                                    } else {
-                                                        player.sendMessage("Sorry, you don't have enough money!");
-                                                    }
-                                                })
-                                                .exceptionally((ex) -> {
-                                                    logger.error("Failed to withdraw {} from {}", amount, player, ex);
-                                                    return null;
-                                                });
-                                    }
-                                }
-                        );
+                                            if (result.isSuccessful()) {
+                                                createGiftCard(player, amount, giftCardCode -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aGift Card Code : &r&l&6" + giftCardCode)));
+                                            } else {
+                                                player.sendMessage("Sorry, you don't have enough money!");
+                                            }
+                                        })
+                                        .exceptionally((ex) -> {
+                                            logger.error("Failed to withdraw {} from {}", amount, player, ex);
+                                            return null;
+                                        });
+                            }
+                        };
+
+                        final ConfirmMenu confirmMenu = new ConfirmMenu.Builder(giftCard)
+                                .title(giftCard.getItemMeta().getDisplayName())
+                                .setOnConfirm(confirmed)
+                                .build();
 
                         confirmMenu.open(player);
                     } else {
