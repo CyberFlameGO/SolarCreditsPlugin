@@ -1,0 +1,13 @@
+tebex:
+  secret: 'A'
+
+items:
+  Item:
+    message: 'You were given a Diamond Sword'
+    command: 'give @p diamond_sword'
+    displayName: '&l&cA Normal Sword'
+    material: 'diamond_sword'
+    lore:
+      - '&aYes'
+      - 'Use this sword to kill players'
+    priceincredits: 5.0
