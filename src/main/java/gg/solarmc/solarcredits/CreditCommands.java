@@ -226,7 +226,7 @@ public class CreditCommands implements CommandExecutor {
                 .getAsString();
     }
 
-    public boolean isNumberCorrectly(String strNum) {
+    private boolean isValidNumber(String strNum) {
         if (strNum == null)
             return false;
 
