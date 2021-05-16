@@ -173,7 +173,7 @@ public class CreditCommands implements CommandExecutor {
                         sender.sendMessage("You don't have permission to do this !!");
                 }
             } else {
-                sender.sendMessage("Sorry, but " + amountString + " is not a double!");
+                sender.sendMessage("Sorry, but " + amountString + " is not a number!");
             }
         }
         return true;
