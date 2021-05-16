@@ -32,7 +32,7 @@ public class CreditCommands implements CommandExecutor {
 
     private final String X_TEBEX_SECRET;
 
-    public CreditCommands(SolarCredit plugin, @NotNull String TebexSecret) {
+    public CreditCommands(SolarCredit plugin, String TebexSecret) {
         this.plugin = plugin;
         this.X_TEBEX_SECRET = TebexSecret;
     }
