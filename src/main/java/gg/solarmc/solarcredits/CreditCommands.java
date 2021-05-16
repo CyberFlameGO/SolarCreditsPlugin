@@ -16,7 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,7 @@ public class CreditCommands implements CommandExecutor {
             if (subCommand.equalsIgnoreCase("spend")) { // credits spend
                 String amountString = args[1];
 
-                if (isNumberCorrectly(amountString)) {
+                if (isValidNumber(amountString)) {
                     double amount = Double.parseDouble(amountString);
                     if (sender instanceof Player player) {
                         ItemStack giftCard = new ItemStack(Material.MAP);
@@ -102,7 +101,7 @@ public class CreditCommands implements CommandExecutor {
             String playerName = args[1];
             String amountString = args[2];
 
-            if (isNumberCorrectly(amountString)) {
+            if (isValidNumber(amountString)) {
                 double amount = Double.parseDouble(amountString);
                 Player receiver = plugin.getServer().getPlayerExact(playerName);
 

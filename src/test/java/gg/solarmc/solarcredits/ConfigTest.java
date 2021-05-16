@@ -17,7 +17,7 @@ public class ConfigTest {
         manager.reloadConfig();
         Config config = new Config(manager);
         config.loadItems();
-        final String name = config.getRotatingItems().get(0).getName();
+        final String name = config.getRotatingItems().get(0).name();
 
         final RotatingShopConfig data = manager.getConfigData();
 
@@ -26,6 +26,5 @@ public class ConfigTest {
                 () -> assertEquals("Item", name),
                 () -> assertEquals("diamond_sword", data.items().get("Item").material())
         );
-
     }
 }

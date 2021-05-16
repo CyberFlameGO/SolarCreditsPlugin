@@ -69,11 +69,11 @@ public class RotatingShopMenu {
 
         for (int i = 0; i < items.length; i++) {
             final RotatingItem rotatingItem = items[i];
-            ItemStack item = new ItemStack(rotatingItem.getMaterial());
+            ItemStack item = new ItemStack(rotatingItem.material());
 
             final ItemMeta itemMeta = item.getItemMeta();
             itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemMeta.setDisplayName(rotatingItem.getDisplayName() == null ? rotatingItem.getName() : ChatColor.translateAlternateColorCodes('&', rotatingItem.getDisplayName()));
+            itemMeta.setDisplayName(rotatingItem.displayName() == null ? rotatingItem.name() : ChatColor.translateAlternateColorCodes('&', rotatingItem.displayName()));
 
             final Slot slot = creditsShop.getSlot(i + 12);
 
@@ -84,11 +84,11 @@ public class RotatingShopMenu {
                 continue;
             }
 
-            itemMeta.setLore(List.of(ChatColor.AQUA + "Price: " + rotatingItem.getPriceInCredits() + " credits"));
+            itemMeta.setLore(List.of(ChatColor.AQUA + "Price: " + rotatingItem.priceInCredits() + " credits"));
 
-            if (rotatingItem.getLore() != null) {
+            if (rotatingItem.lore() != null) {
                 final List<String> lore = itemMeta.getLore();
-                lore.addAll(rotatingItem.getLore());
+                lore.addAll(rotatingItem.lore());
                 itemMeta.setLore(lore.stream().map(it -> ChatColor.translateAlternateColorCodes('&', it)).collect(Collectors.toList()));
             }
 
@@ -114,15 +114,15 @@ public class RotatingShopMenu {
             if (c) {
                 plugin.getServer().getDataCenter()
                         .runTransact((transaction) -> {
-                            final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.getPriceInCredits()));
+                            final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.priceInCredits()));
                             if (result.isSuccessful()) {
                                 // Bukkit.dispatchCommand(console, rotatingItem.getCommand());
-                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.getCommand());
+                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.command());
                             } else {
                                 player.sendMessage("Sorry, you don't have enough money!");
                             }
                         })
-                        .thenRunSync(() -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.getMessage())))
+                        .thenRunSync(() -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message())))
                         .exceptionally((ex) -> {
                             LOGGER.error("Exception in Credits Shop Transaction", ex);
                             return null;
