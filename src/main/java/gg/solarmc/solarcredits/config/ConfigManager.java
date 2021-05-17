@@ -15,7 +15,7 @@ import java.nio.file.Path;
 
 public final class ConfigManager<C> {
     private final ConfigurationHelper<C> configHelper;
-    private volatile C configData;
+    private C configData;
 
     private ConfigManager(ConfigurationHelper<C> configHelper) {
         this.configHelper = configHelper;

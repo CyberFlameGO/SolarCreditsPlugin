@@ -33,6 +33,11 @@ public class SolarCredit extends JavaPlugin {
 
     }
 
+    @Override
+    public void reloadConfig() {
+
+    }
+
     public RotatingShopMenu getShop() {
         return shop;
     }
