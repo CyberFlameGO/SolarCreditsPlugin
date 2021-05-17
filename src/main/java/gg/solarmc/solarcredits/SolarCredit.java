@@ -35,7 +35,7 @@ public class SolarCredit extends JavaPlugin {
 
     @Override
     public void reloadConfig() {
-
+        // TODO ask to a248 about this again...
     }
 
     public RotatingShopMenu getShop() {

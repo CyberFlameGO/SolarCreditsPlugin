@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Consumer;
@@ -104,7 +105,7 @@ public record SpendCommand(SolarCredit plugin, String X_TEBEX_SECRET) implements
             }
         } catch (IOException ex) {
             sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later");
-            // throw ex;
+            throw new UncheckedIOException(ex);
         }
     }
 
