@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -24,7 +25,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record SpendCommand(SolarCredit plugin, String X_TEBEX_SECRET) implements CreditSubCommand {
+public record SpendCommand(SolarCredit plugin, String tebexSecret) implements CreditSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player) {
@@ -40,6 +41,8 @@ public record SpendCommand(SolarCredit plugin, String X_TEBEX_SECRET) implements
                     giftMeta.setLore(List.of(ChatColor.AQUA + "$" + helper.formatBigDecimal(amountInDecimal)));
                     giftCard.setItemMeta(giftMeta);
 
+                    final Logger logger = helper.getLogger();
+
                     final ConfirmMenu confirmMenu = new ConfirmMenu.Builder(giftCard)
                             .title(giftCard.getItemMeta().getDisplayName())
                             .setOnConfirm(c -> {
@@ -50,11 +53,14 @@ public record SpendCommand(SolarCredit plugin, String X_TEBEX_SECRET) implements
                                                         .withdrawBalance(transaction, amountInDecimal);
 
                                                 if (result.isSuccessful())
-                                                    createGiftCard(player, amount, giftCardCode -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aGift Card Code : &r&l&6" + giftCardCode)));
+                                                    createGiftCard(player, amount,
+                                                            giftCardCode ->
+                                                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aGift Card Code : &r&l&6" + giftCardCode)),
+                                                            logger);
                                                 else player.sendMessage("Sorry, you don't have enough money!");
                                             })
                                             .exceptionally((ex) -> {
-                                                LOGGER.error("Failed to withdraw {} from {}", amount, player, ex);
+                                                logger.error("Failed to withdraw {} from {}", amount, player, ex);
                                                 return null;
                                             });
                                 }
@@ -74,7 +80,7 @@ public record SpendCommand(SolarCredit plugin, String X_TEBEX_SECRET) implements
     /**
      * amount Currency Value of the gift card
      */
-    private void createGiftCard(CommandSender sender, double amount, Consumer<String> giftCardCode) {
+    private void createGiftCard(Player sender, double amount, Consumer<String> giftCardCode, Logger logger) {
         try {
             RequestBody body = new FormBody.Builder()
                     .add("amount", String.valueOf(amount))
@@ -82,25 +88,24 @@ public record SpendCommand(SolarCredit plugin, String X_TEBEX_SECRET) implements
             String GIFT_CARDS = "https://plugin.tebex.io/gift-cards";
             Request request = new Request.Builder()
                     .url(GIFT_CARDS)
-                    .addHeader("X-Tebex-Secret", X_TEBEX_SECRET)
+                    .addHeader("X-Tebex-Secret", tebexSecret)
                     .post(body)
                     .build();
 
             try (Response response = plugin.getOkHttpClient().newCall(request).execute()) {
                 if (response.code() == 403) {
-                    Player player = (Player) sender;
                     plugin.getServer().getDataCenter()
-                            .runTransact(transaction -> (player).getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction, BigDecimal.valueOf(amount)))
+                            .runTransact(transaction -> sender.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction, BigDecimal.valueOf(amount)))
                             .thenRunSync(() -> sender.sendMessage(ChatColor.RED + "Something went wrong, Please try again later!"))
                             .exceptionally(e -> {
-                                LOGGER.error("Failed to add {} into account of {}", amount, sender.getName(), e);
+                                logger.error("Failed to add {} into account of {}", amount, sender.getName(), e);
                                 return null;
                             });
                     return;
                 }
 
                 String code = parseJsonAndGetCode(response.body().string());
-                LOGGER.info("A gift-card was created by {} : ${}", sender.getName(), amount);
+                logger.info("A gift-card was created by {} : ${}", sender.getName(), amount);
                 giftCardCode.accept(code);
             }
         } catch (IOException ex) {

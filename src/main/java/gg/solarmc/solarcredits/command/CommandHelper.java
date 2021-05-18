@@ -2,32 +2,39 @@ package gg.solarmc.solarcredits.command;
 
 import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.loader.credits.WithdrawResult;
-import gg.solarmc.solarcredits.CreditCommands;
 import gg.solarmc.solarcredits.SolarCredit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import space.arim.omnibus.util.ThisClass;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.function.BiConsumer;
 
 public record CommandHelper(SolarCredit plugin) {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CreditCommands.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThisClass.get());
     private static final DecimalFormat df = new DecimalFormat("#,###.00");
+
+    public Logger getLogger() {
+        return LOGGER;
+    }
 
     public String formatBigDecimal(BigDecimal number) {
         return df.format(number);
     }
 
     public double getValidNumber(String strNum) {
+        if (strNum == null)
+            return -1;
+
         try {
             double d = Double.parseDouble(strNum);
             if (d < 0)
                 return -1;
             return d;
-        } catch (NumberFormatException | NullPointerException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
     }

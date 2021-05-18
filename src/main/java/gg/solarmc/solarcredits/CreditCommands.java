@@ -14,7 +14,7 @@ public class CreditCommands implements CommandExecutor {
     private final SolarCredit plugin;
     private final List<CreditSubCommand> subCommands;
 
-    public CreditCommands(SolarCredit plugin, String TebexSecret) {
+    public CreditCommands(SolarCredit plugin, String tebexSecret) {
         this.plugin = plugin;
         subCommands = List.of(
                 new AddCommand(),
@@ -24,7 +24,7 @@ public class CreditCommands implements CommandExecutor {
                 new SendCommand(plugin),
                 new SetCommand(),
                 new ShopCommand(plugin),
-                new SpendCommand(plugin, TebexSecret)
+                new SpendCommand(plugin, tebexSecret)
         );
     }
 
@@ -47,7 +47,7 @@ public class CreditCommands implements CommandExecutor {
         } else {
             sender.sendMessage("No Command for " + arg + " in credits");
         }
-        return false;
+        return true;
     }
 
     private CreditSubCommand getCommand(String name) {

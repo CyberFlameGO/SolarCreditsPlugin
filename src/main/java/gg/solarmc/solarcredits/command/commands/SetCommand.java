@@ -10,6 +10,8 @@ public class SetCommand implements CreditSubCommand {
     public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender.hasPermission("credits.set"))
             helper.validateAndRun(sender, args, (receiver, amount) -> helper.setCredits(sender, receiver, amount));
+        else
+            sender.sendMessage("You don't have permission to use this Command");
         return true;
     }
 

@@ -11,18 +11,15 @@ public class SolarCredit extends JavaPlugin {
     private OkHttpClient okHttpClient;
     private RotatingShopMenu shop;
 
-    private String TEBEX_SECRET;
-    private final String rotatingShopFilePath = "rotatingshop.yml";
-
     @Override
     public void onEnable() {
         okHttpClient = new OkHttpClient();
-        ConfigManager<RotatingShopConfig> manager = ConfigManager.create(this.getDataFolder().toPath(), rotatingShopFilePath, RotatingShopConfig.class);
+
+        ConfigManager<RotatingShopConfig> manager = ConfigManager.create(this.getDataFolder().toPath(), "rotatingshop.yml", RotatingShopConfig.class);
         Config config = new Config(manager);
         config.loadItems();
-        TEBEX_SECRET = manager.getConfigData().tebexSecret();
-
         shop = new RotatingShopMenu(this, config);
+        String TEBEX_SECRET = manager.getConfigData().tebexSecret();
 
         getLogger().info("SolarCredits Started");
         getCommand("credits").setExecutor(new CreditCommands(this, TEBEX_SECRET));

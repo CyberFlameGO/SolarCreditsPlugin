@@ -10,7 +10,8 @@ public record ReloadCommand(SolarCredit plugin) implements CreditSubCommand {
     public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender.hasPermission("credits.reload")) {
             plugin.reloadConfig();
-            LOGGER.info("Reloaded Credits Plugin");
+
+            helper.getLogger().info("Reloaded Credits Plugin");
         } else
             sender.sendMessage("You don't have permission to reload this plugin");
 
