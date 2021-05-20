@@ -56,16 +56,13 @@ public class RotatingShopMenu {
     public void openShop(Player player) {
         RotatingItem[] items = getItems();
 
-        creditsShop.getSlot(10)//.setItem(balance);
-                .setItemTemplate(p -> {
-                    BigDecimal credits = p.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
-                    ItemStack balance = new ItemStack(Material.MAP);
-                    ItemMeta balMeta = balance.getItemMeta();
-                    balMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "Balance : " + credits);
-                    balance.setItemMeta(balMeta);
-                    return balance;
-                });
+        BigDecimal credits = player.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
+        ItemStack balance = new ItemStack(Material.MAP);
+        ItemMeta balMeta = balance.getItemMeta();
+        balMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "Balance : " + credits);
+        balance.setItemMeta(balMeta);
 
+        creditsShop.getSlot(10).setItem(balance);
 
         for (int i = 0; i < items.length; i++) {
             final RotatingItem rotatingItem = items[i];
@@ -96,6 +93,7 @@ public class RotatingShopMenu {
             slot.setItem(item);
 
             int slotId = i;
+
             slot.setClickHandler((p, info) -> {
                 if (playersInteracted.get(slotId).contains(p.getUniqueId())) {
                     p.sendMessage(ChatColor.RED + "You can not buy this Item Again!!");

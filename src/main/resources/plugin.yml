@@ -1,6 +1,6 @@
 name: SolarCredit
 main: gg.solarmc.solarcredits.SolarCredit
-version: 1.0
+version: ${project.version}
 authors: [ herobrine99dan, zone_infinity ]
 commands:
    credits:
