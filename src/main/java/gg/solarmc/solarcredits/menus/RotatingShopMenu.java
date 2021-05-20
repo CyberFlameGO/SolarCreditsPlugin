@@ -118,12 +118,15 @@ public class RotatingShopMenu {
                             if (result.isSuccessful()) {
                                 // Bukkit.dispatchCommand(console, rotatingItem.getCommand());
                                 plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.command());
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
                             } else {
-                                player.sendMessage("Sorry, you don't have enough money!");
+                                player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                             }
                         })
-                        .thenRunSync(() -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message())))
+                        .thenRunSync(() -> {
+                        })
                         .exceptionally((ex) -> {
+                            player.sendMessage(ChatColor.RED + "Something went wrong, please try again later...");
                             LOGGER.error("Exception in Credits Shop Transaction", ex);
                             return null;
                         });

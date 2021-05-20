@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SolarCredit extends JavaPlugin {
     private OkHttpClient okHttpClient;
+    private Config config;
     private RotatingShopMenu shop;
 
     @Override
@@ -16,13 +17,13 @@ public class SolarCredit extends JavaPlugin {
         okHttpClient = new OkHttpClient();
 
         ConfigManager<RotatingShopConfig> manager = ConfigManager.create(this.getDataFolder().toPath(), "rotatingshop.yml", RotatingShopConfig.class);
-        Config config = new Config(manager);
+        this.config = new Config(manager);
         config.loadItems();
         shop = new RotatingShopMenu(this, config);
         String TEBEX_SECRET = manager.getConfigData().tebexSecret();
+        getCommand("credits").setExecutor(new CreditCommands(this, TEBEX_SECRET));
 
         getLogger().info("SolarCredits Started");
-        getCommand("credits").setExecutor(new CreditCommands(this, TEBEX_SECRET));
     }
 
     @Override
@@ -32,7 +33,9 @@ public class SolarCredit extends JavaPlugin {
 
     @Override
     public void reloadConfig() {
-        // TODO ask to a248 about this again...
+        config.loadItems();
+        String TEBEX_SECRET = config.getConfig().tebexSecret();
+        getCommand("credits").setExecutor(new CreditCommands(this, TEBEX_SECRET));
     }
 
     public RotatingShopMenu getShop() {

@@ -10,14 +10,16 @@ import java.util.Map;
 
 public class Config {
     private final ConfigManager<RotatingShopConfig> manager;
-    private final List<RotatingItem> rotatingItems = new ArrayList<>();
+    private List<RotatingItem> rotatingItems;
 
     public Config(ConfigManager<RotatingShopConfig> manager) {
         this.manager = manager;
     }
 
     public void loadItems() {
+        rotatingItems = new ArrayList<>();
         manager.reloadConfig();
+
         Map<String, @SubSection ItemConfig> items = manager.getConfigData().items();
 
         items.forEach((key, value) -> {
@@ -39,6 +41,10 @@ public class Config {
             final RotatingItem item = new RotatingItem(key, material, price, command, message, displayName, lore);
             rotatingItems.add(item);
         });
+    }
+
+    public RotatingShopConfig getConfig() {
+        return manager.getConfigData();
     }
 
     public List<RotatingItem> getRotatingItems() {

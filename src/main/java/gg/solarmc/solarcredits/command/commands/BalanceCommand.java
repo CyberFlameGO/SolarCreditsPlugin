@@ -3,6 +3,7 @@ package gg.solarmc.solarcredits.command.commands;
 import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.command.CreditSubCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,9 +14,9 @@ public class BalanceCommand implements CreditSubCommand {
     public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player) {
             final BigDecimal balance = player.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
-            sender.sendMessage("You balance is : " + helper.formatBigDecimal(balance));
+            sender.sendMessage(ChatColor.GREEN + "You balance is : " + helper.formatBigDecimal(balance));
         } else
-            sender.sendMessage("Only Players use this Command");
+            sender.sendMessage(ChatColor.RED + "Only Players use this Command");
 
         return true;
     }

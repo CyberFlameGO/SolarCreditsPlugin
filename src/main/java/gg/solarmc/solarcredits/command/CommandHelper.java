@@ -3,6 +3,7 @@ package gg.solarmc.solarcredits.command;
 import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.SolarCredit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
@@ -51,14 +52,14 @@ public record CommandHelper(SolarCredit plugin) {
                 Player receiver = plugin.getServer().getPlayerExact(playerName);
 
                 if (receiver == null)
-                    sender.sendMessage("Sorry, but i'm not able to find the player " + playerName + " !");
+                    sender.sendMessage(ChatColor.RED + "Sorry, but i'm not able to find the player " + playerName + " !");
 
                 transaction.accept(receiver, amount);
             } else {
-                sender.sendMessage("Sorry, but " + amount + " is not a number!");
+                sender.sendMessage(ChatColor.RED + "Sorry, but " + amount + " is not a number!");
             }
         } else {
-            sender.sendMessage("Please specify the Player and amount both!");
+            sender.sendMessage(ChatColor.RED + "Please specify the Player and amount both!");
         }
     }
 
@@ -71,11 +72,12 @@ public record CommandHelper(SolarCredit plugin) {
                         receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction,
                                 BigDecimal.valueOf(amount));
                     } else {
-                        sender.sendMessage("Sorry, you don't have enough money!");
+                        sender.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                     }
                 })
-                .thenRunSync(() -> sender.sendMessage("Done!"))
+                .thenRunSync(() -> sender.sendMessage(ChatColor.GREEN + "Done!"))
                 .exceptionally((ex) -> {
+                    sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later...");
                     LOGGER.error("Failed to deposit {} into account of {} from {}", amount, receiver, sender, ex);
                     return null;
                 });
@@ -85,8 +87,9 @@ public record CommandHelper(SolarCredit plugin) {
         plugin.getServer().getDataCenter()
                 .runTransact(transaction -> receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
                         .depositBalance(transaction, BigDecimal.valueOf(amount)))
-                .thenRunSync(() -> sender.sendMessage("Done!"))
+                .thenRunSync(() -> sender.sendMessage(ChatColor.GREEN + "Done!"))
                 .exceptionally((ex) -> {
+                    sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later...");
                     LOGGER.error("Failed to add {} into account of {}", amount, receiver, ex);
                     return null;
                 });
@@ -98,13 +101,14 @@ public record CommandHelper(SolarCredit plugin) {
                     WithdrawResult result = receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
                             .withdrawBalance(transaction, BigDecimal.valueOf(amount));
                     if (result.isSuccessful()) {
-                        sender.sendMessage("Done without errors!");
+                        sender.sendMessage(ChatColor.GREEN + "Done!");
                     } else {
                         sender.sendMessage("Sorry, he doesn't have enough money!");
                     }
                 })
                 .thenRunSync(() -> sender.sendMessage("Done!"))
                 .exceptionally((ex) -> {
+                    sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later...");
                     LOGGER.error("Failed to remove {} into account of {}", amount, receiver, ex);
                     return null;
                 });
@@ -113,8 +117,9 @@ public record CommandHelper(SolarCredit plugin) {
     public void setCredits(CommandSender sender, Player receiver, double amount) {
         plugin.getServer().getDataCenter()
                 .runTransact(transaction -> receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).setBalance(transaction, BigDecimal.valueOf(amount)))
-                .thenRunSync(() -> sender.sendMessage("Done!"))
+                .thenRunSync(() -> sender.sendMessage(ChatColor.GREEN + "Done!"))
                 .exceptionally((ex) -> {
+                    sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later...");
                     LOGGER.error("Failed to set {} into account of {}", amount, receiver, ex);
                     return null;
                 });

@@ -57,7 +57,8 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret) implements Cr
                                                             giftCardCode ->
                                                                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aGift Card Code : &r&l&6" + giftCardCode)),
                                                             logger);
-                                                else player.sendMessage("Sorry, you don't have enough money!");
+                                                else
+                                                    player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                                             })
                                             .exceptionally((ex) -> {
                                                 logger.error("Failed to withdraw {} from {}", amount, player, ex);
@@ -68,11 +69,11 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret) implements Cr
                             .build();
                     confirmMenu.open(player);
                 } else
-                    sender.sendMessage("Sorry, but " + amountString + " is not a number!");
+                    sender.sendMessage(ChatColor.RED + "Sorry, but " + amountString + " is not a number!");
             } else
-                sender.sendMessage("Please specify the Amount you want to use for the Gift Card");
+                sender.sendMessage(ChatColor.RED + "Please specify the Amount you want to use for the Gift Card");
         } else
-            sender.sendMessage("Only Players use this Command");
+            sender.sendMessage(ChatColor.RED + "Only Players use this Command");
 
         return true;
     }
