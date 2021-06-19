@@ -88,11 +88,11 @@
     <repositories>
         <repository>
             <id>solar-releases</id>
-            <url>https://mvn-repo.platinum-mc.com/releases</url>
+            <url>https://mvn-repo.solarmc.gg/releases</url>
         </repository>
         <repository>
             <id>solar-snapshots</id>
-            <url>https://mvn-repo.platinum-mc.com/snapshots</url>
+            <url>https://mvn-repo.solarmc.gg/snapshots</url>
         </repository>
     </repositories>
 
