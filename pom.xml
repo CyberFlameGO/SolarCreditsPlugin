@@ -6,7 +6,7 @@
     <parent>
         <groupId>gg.solarmc</groupId>
         <artifactId>solar-parent</artifactId>
-        <version>0.5.6</version>
+        <version>0.6.1</version>
     </parent>
 
     <profiles>
@@ -23,8 +23,11 @@
 
     <properties>
         <junit.version>5.7.0</junit.version>
-        <solarapi.version>1.1.5</solarapi.version>
-        <loader.version>0.4.2</loader.version>
+        <solarapi.version>1.1.7</solarapi.version>
+        <loader.version>0.5.1</loader.version>
+        <canvas.version>1.6.1</canvas.version>
+        <okhttp.version>4.9.1</okhttp.version>
+        <dazzleconf.version>1.2.0-M2</dazzleconf.version>
         <java.version>16</java.version>
     </properties>
 
@@ -54,21 +57,21 @@
         <dependency>
             <groupId>org.ipvp</groupId>
             <artifactId>canvas</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>${canvas.version}</version>
         </dependency>
 
         <!-- https://github.com/square/okhttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.9.1</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <!-- https://github.com/A248/DazzleConf -->
         <dependency>
             <groupId>space.arim.dazzleconf</groupId>
             <artifactId>dazzleconf-ext-snakeyaml</artifactId>
-            <version>1.2.0-M2</version>
+            <version>${dazzleconf.version}</version>
         </dependency>
 
         <dependency>
