@@ -25,7 +25,7 @@
         <junit.version>5.7.0</junit.version>
         <solarapi.version>1.1.7</solarapi.version>
         <loader.version>0.5.1</loader.version>
-        <canvas.version>1.6.1</canvas.version>
+        <canvas.version>1.7.0</canvas.version>
         <okhttp.version>4.9.1</okhttp.version>
         <dazzleconf.version>1.2.0-M2</dazzleconf.version>
         <java.version>16</java.version>
