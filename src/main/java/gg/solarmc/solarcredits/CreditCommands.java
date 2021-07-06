@@ -9,12 +9,14 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CreditCommands implements CommandExecutor {
     private final SolarCredit plugin;
     private final List<CreditSubCommand> subCommands;
+    private final CommandHelper helper;
 
-    public CreditCommands(SolarCredit plugin, String tebexSecret) {
+    public CreditCommands(SolarCredit plugin, CommandHelper helper, String tebexSecret) {
         this.plugin = plugin;
         subCommands = List.of(
                 new AddCommand(),
@@ -26,23 +28,29 @@ public class CreditCommands implements CommandExecutor {
                 new ShopCommand(plugin),
                 new SpendCommand(plugin, tebexSecret)
         );
+        this.helper = helper;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            // SEND ALL COMMANDS MSG
+            String commands = "Solar Credits Commands : \n" +
+                    subCommands.stream()
+                            .map(CreditSubCommand::getName)
+                            .collect(Collectors.joining("\n")) +
+                    "\n/credits <command>";
+            // TODO: make it look good
+            sender.sendMessage(commands.split("\n"));
             return true;
         }
 
-        final String arg = args[0];
-        final CreditSubCommand subCommand = getCommand(arg);
+        String arg = args[0];
+        CreditSubCommand subCommand = getCommand(arg);
 
         if (subCommand != null) {
-            final List<String> subArgs = Arrays.asList(args).subList(1, args.length);
-            CommandHelper helper = new CommandHelper(plugin);
+            List<String> subArgs = Arrays.asList(args).subList(1, args.length);
 
-            subCommand.execute(sender, subArgs.toArray(String[]::new), helper);
+            subCommand.execute(sender, subArgs.toArray(String[]::new), this.helper);
             return true;
         } else {
             sender.sendMessage("No Command for " + arg + " in credits");

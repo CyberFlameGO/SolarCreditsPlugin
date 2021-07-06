@@ -19,7 +19,7 @@
         </profile>
     </profiles>
     <artifactId>economyfrontend</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <properties>
         <junit.version>5.7.0</junit.version>
@@ -28,6 +28,7 @@
         <canvas.version>1.7.0</canvas.version>
         <okhttp.version>4.9.1</okhttp.version>
         <dazzleconf.version>1.2.0-M2</dazzleconf.version>
+        <papi.version>2.10.9</papi.version>
         <java.version>16</java.version>
     </properties>
 
@@ -74,6 +75,14 @@
             <version>${dazzleconf.version}</version>
         </dependency>
 
+        <!-- https://github.com/PlaceholderAPI/PlaceholderAPI/ -->
+        <dependency>
+        <groupId>me.clip</groupId>
+        <artifactId>placeholderapi</artifactId>
+        <version>${papi.version}</version>
+        <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -96,6 +105,10 @@
         <repository>
             <id>solar-snapshots</id>
             <url>https://mvn-repo.solarmc.gg/snapshots</url>
+        </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
     </repositories>
 
