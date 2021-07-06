@@ -3,6 +3,7 @@ package gg.solarmc.solarcredits;
 import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.config.Config;
 import gg.solarmc.solarcredits.config.ConfigManager;
+import gg.solarmc.solarcredits.config.MessageConfig;
 import gg.solarmc.solarcredits.config.RotatingShopConfig;
 import gg.solarmc.solarcredits.menus.RotatingShopMenu;
 import gg.solarmc.solarcredits.placeholder.CreditsBalance;
@@ -16,11 +17,16 @@ public class SolarCredit extends JavaPlugin {
     private Config config;
     private RotatingShopMenu shop;
     private CommandHelper helper;
+    private ConfigManager<RotatingShopConfig> shopManager;
+    private ConfigManager<MessageConfig> messageManager;
     private final Logger LOGGER = LoggerFactory.getLogger(SolarCredit.class);
 
     @Override
     public void onEnable() {
-        helper = new CommandHelper(this);
+        shopManager = ConfigManager.create(this.getDataFolder().toPath(), "rotatingshop.yml", RotatingShopConfig.class);
+        messageManager = ConfigManager.create(this.getDataFolder().toPath(), "messageconfig.yml", MessageConfig.class);
+
+        helper = new CommandHelper(this, messageManager.getConfigData());
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new CreditsBalance(this, helper).register();
         } else {
@@ -31,12 +37,11 @@ public class SolarCredit extends JavaPlugin {
 
         okHttpClient = new OkHttpClient();
 
-        ConfigManager<RotatingShopConfig> manager = ConfigManager.create(this.getDataFolder().toPath(), "rotatingshop.yml", RotatingShopConfig.class);
-        this.config = new Config(manager);
+        this.config = new Config(shopManager, messageManager);
         config.loadItems();
         shop = new RotatingShopMenu(this, config);
 
-        String TEBEX_SECRET = manager.getConfigData().tebexSecret();
+        String TEBEX_SECRET = shopManager.getConfigData().tebexSecret();
         getCommand("credits").setExecutor(new CreditCommands(this, helper, TEBEX_SECRET));
 
         LOGGER.info("SolarCredits Started");
@@ -49,8 +54,9 @@ public class SolarCredit extends JavaPlugin {
 
     @Override
     public void reloadConfig() {
+        messageManager.reloadConfig();
         config.loadItems();
-        String TEBEX_SECRET = config.getConfig().tebexSecret();
+        String TEBEX_SECRET = config.getShopConfig().tebexSecret();
         getCommand("credits").setExecutor(new CreditCommands(this, helper, TEBEX_SECRET));
     }
 

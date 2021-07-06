@@ -17,7 +17,7 @@ public class ConfigTest {
     @Test
     void shouldBeEqualToConfig() {
         ConfigManager<RotatingShopConfig> manager = ConfigManager.create(Path.of("src", "test", "resources"), "rotatingshop.yml", RotatingShopConfig.class);
-        Config config = new Config(manager);
+        Config config = new Config(manager, null);
         config.loadItems();
         final String name = config.getRotatingItems().get(0).name();
 

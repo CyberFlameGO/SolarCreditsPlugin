@@ -26,7 +26,7 @@ public class CreditCommands implements CommandExecutor {
                 new SendCommand(plugin),
                 new SetCommand(),
                 new ShopCommand(plugin),
-                new SpendCommand(plugin, tebexSecret)
+                new SpendCommand(plugin, tebexSecret, helper.getMessageConfig("spend"))
         );
         this.helper = helper;
     }

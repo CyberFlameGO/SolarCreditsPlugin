@@ -9,18 +9,20 @@ import java.util.List;
 import java.util.Map;
 
 public class Config {
-    private final ConfigManager<RotatingShopConfig> manager;
+    private final ConfigManager<RotatingShopConfig> shopManager;
+    private final ConfigManager<MessageConfig> messageManager;
     private List<RotatingItem> rotatingItems;
 
-    public Config(ConfigManager<RotatingShopConfig> manager) {
-        this.manager = manager;
+    public Config(ConfigManager<RotatingShopConfig> shopManager, ConfigManager<MessageConfig> messageManager) {
+        this.shopManager = shopManager;
+        this.messageManager = messageManager;
     }
 
     public void loadItems() {
+        shopManager.reloadConfig();
         rotatingItems = new ArrayList<>();
-        manager.reloadConfig();
 
-        Map<String, @SubSection ItemConfig> items = manager.getConfigData().items();
+        Map<String, @SubSection ItemConfig> items = shopManager.getConfigData().items();
 
         items.forEach((key, value) -> {
             Material material = Material.matchMaterial(value.material());
@@ -43,8 +45,12 @@ public class Config {
         });
     }
 
-    public RotatingShopConfig getConfig() {
-        return manager.getConfigData();
+    public RotatingShopConfig getShopConfig() {
+        return shopManager.getConfigData();
+    }
+
+    public MessageConfig getMessageConfig() {
+        return messageManager.getConfigData();
     }
 
     public List<RotatingItem> getRotatingItems() {

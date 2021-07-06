@@ -6,6 +6,7 @@ import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.SolarCredit;
 import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.command.CreditSubCommand;
+import gg.solarmc.solarcredits.config.CommandMessageConfig;
 import gg.solarmc.solarcredits.menus.ConfirmMenu;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -25,7 +26,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record SpendCommand(SolarCredit plugin, String tebexSecret) implements CreditSubCommand {
+public record SpendCommand(SolarCredit plugin, String tebexSecret,
+                           CommandMessageConfig config) implements CreditSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player) {
@@ -41,7 +43,7 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret) implements Cr
                     giftMeta.setLore(List.of(ChatColor.AQUA + "$" + helper.formatBigDecimal(amountInDecimal)));
                     giftCard.setItemMeta(giftMeta);
 
-                    final Logger logger = helper.getLogger();
+                    Logger logger = helper.getLogger();
 
                     final ConfirmMenu confirmMenu = new ConfirmMenu.Builder(giftCard)
                             .title(giftCard.getItemMeta().getDisplayName())
@@ -54,13 +56,16 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret) implements Cr
 
                                                 if (result.isSuccessful())
                                                     createGiftCard(player, amount,
-                                                            giftCardCode ->
-                                                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aGift Card Code : &r&l&6" + giftCardCode)),
+                                                            giftCardCode -> player.sendMessage(new String[]{
+                                                                    helper.translateToColor(config.successful()),
+                                                                    helper.translateToColor("&aGift Card Code : &l&6" + giftCardCode)
+                                                            }),
                                                             logger);
                                                 else
                                                     player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                                             })
                                             .exceptionally((ex) -> {
+                                                sendError(sender);
                                                 logger.error("Failed to withdraw {} from {}", amount, player, ex);
                                                 return null;
                                             });
@@ -97,7 +102,7 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret) implements Cr
                 if (response.code() == 403) {
                     plugin.getServer().getDataCenter()
                             .runTransact(transaction -> sender.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction, BigDecimal.valueOf(amount)))
-                            .thenRunSync(() -> sender.sendMessage(ChatColor.RED + "Something went wrong, Please try again later!"))
+                            .thenRunSync(() -> sendError(sender))
                             .exceptionally(e -> {
                                 logger.error("Failed to add {} into account of {}", amount, sender.getName(), e);
                                 return null;
@@ -110,9 +115,13 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret) implements Cr
                 giftCardCode.accept(code);
             }
         } catch (IOException ex) {
-            sender.sendMessage(ChatColor.RED + "Something went wrong, please try again later");
+            sendError(sender);
             throw new UncheckedIOException(ex);
         }
+    }
+
+    private void sendError(CommandSender sender) {
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.error()));
     }
 
     private String parseJsonAndGetCode(String json) {
