@@ -6,3 +6,4 @@ commands:
    credits:
       description: The only command of SolarCredit
       usage: /<command>
+depend: [PlaceholderAPI]
