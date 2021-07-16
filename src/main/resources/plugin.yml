@@ -1,4 +1,4 @@
-name: SolarCredit
+name: SolarCredits
 main: gg.solarmc.solarcredits.SolarCredit
 version: ${project.version}
 authors: [ herobrine99dan, zoneinfinity ]
