@@ -13,7 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 public class SolarCredit extends JavaPlugin {
@@ -71,13 +74,11 @@ public class SolarCredit extends JavaPlugin {
 
     private void backupRotatingShop(String filePath, String backupFilePath) {
         // rotatingShop.backup.yml
-        try {
-            Path dataFolder = getDataFolder().toPath();
-            Path backupFile = Path.of(dataFolder.toString(), backupFilePath);
+        Path dataFolder = getDataFolder().toPath();
+        Path backupFile = Path.of(dataFolder.toString(), backupFilePath);
 
-            FileInputStream fileInputStream = new FileInputStream(dataFolder.resolve(filePath).toFile());
-            FileOutputStream fileOutputStream = new FileOutputStream(backupFile.toFile());
-
+        try (FileInputStream fileInputStream = new FileInputStream(dataFolder.resolve(filePath).toFile());
+             FileOutputStream fileOutputStream = new FileOutputStream(backupFile.toFile())) {
             fileInputStream.transferTo(fileOutputStream);
             LOGGER.info("rotatingShop backup Complete!");
         } catch (IOException ex) {
