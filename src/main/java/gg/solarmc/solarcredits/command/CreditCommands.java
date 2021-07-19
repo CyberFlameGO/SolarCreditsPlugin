@@ -1,8 +1,8 @@
-package gg.solarmc.solarcredits;
+package gg.solarmc.solarcredits.command;
 
-import gg.solarmc.solarcredits.command.CommandHelper;
-import gg.solarmc.solarcredits.command.CreditSubCommand;
+import gg.solarmc.solarcredits.SolarCredit;
 import gg.solarmc.solarcredits.command.commands.*;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

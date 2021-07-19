@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface MessageConfig {
 
-    static Map<String, @SubSection CommandMessageConfig> setDefaultItem(@SubSection CommandMessageConfig defaultMsgConfig) {
+    static Map<String, @SubSection CommandMessageConfig> setDefaultConfig(@SubSection CommandMessageConfig defaultMsgConfig) {
         return Map.of(
                 "add", defaultMsgConfig,
                 "remove", defaultMsgConfig,
@@ -20,7 +20,7 @@ public interface MessageConfig {
     }
 
     @ConfKey("playernotfound")
-    @ConfDefault.DefaultString("")
+    @ConfDefault.DefaultString("The player is not found!!")
     String playerNotFound();
 
     @ConfKey("commands")
