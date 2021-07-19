@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 
 public class SolarCredit extends JavaPlugin {
@@ -27,7 +26,7 @@ public class SolarCredit extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        //backupRotatingShop("rotatingshop.yml", "rotatingShop.backup.yml");
+        backupRotatingShop("rotatingshop.yml", "rotatingShop.backup.yml");
 
         Path dataFolder = this.getDataFolder().toPath();
         ConfigManager<RotatingShopConfig> shopManager = ConfigManager.create(dataFolder, "rotatingshop.yml", RotatingShopConfig.class);
@@ -74,27 +73,13 @@ public class SolarCredit extends JavaPlugin {
         // rotatingShop.backup.yml
         try {
             Path dataFolder = getDataFolder().toPath();
-            File backupFile = new File(dataFolder + "/" + backupFilePath);
+            Path backupFile = Path.of(dataFolder.toString(), backupFilePath);
 
-            if (!backupFile.exists()) {
-                if (backupFile.createNewFile()) {
-                    LOGGER.info("Created a backup rotatingshop File");
-                } else {
-                    LOGGER.error("Couldn't create a backup rotatingshop File");
-                }
-            }
+            FileInputStream fileInputStream = new FileInputStream(dataFolder.resolve(filePath).toFile());
+            FileOutputStream fileOutputStream = new FileOutputStream(backupFile.toFile());
 
-            FileReader fin = new FileReader(dataFolder.resolve(filePath).toFile());
-            FileWriter fout = new FileWriter(backupFile, true);
-            int c;
-            while ((c = fin.read()) != -1) {
-                fout.write(c);
-            }
+            fileInputStream.transferTo(fileOutputStream);
             LOGGER.info("rotatingShop backup Complete!");
-
-            fin.close();
-            fout.close();
-        } catch (FileAlreadyExistsException ignored) {
         } catch (IOException ex) {
             throw new UncheckedIOException("Backup couldn't be created!!", ex);
         }

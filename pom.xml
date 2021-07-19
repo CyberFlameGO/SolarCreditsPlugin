@@ -19,7 +19,7 @@
         </profile>
     </profiles>
     <artifactId>SolarCredits</artifactId>
-    <version>0.1.1_11-SNAPSHOT</version>
+    <version>0.1.1_12-SNAPSHOT</version>
 
     <properties>
         <junit.version>5.7.0</junit.version>
