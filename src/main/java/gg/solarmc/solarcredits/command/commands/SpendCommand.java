@@ -135,4 +135,14 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
     public String getName() {
         return "spend";
     }
+
+    @Override
+    public String getArgs() {
+        return "[Amount]";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Spend credits for a gift card :D";
+    }
 }

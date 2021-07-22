@@ -8,4 +8,8 @@ public interface CreditSubCommand {
 
     String getName();
 
+    String getArgs();
+
+    String getDescription();
+
 }

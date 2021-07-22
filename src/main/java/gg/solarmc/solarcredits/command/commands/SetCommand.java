@@ -21,4 +21,14 @@ public class SetCommand implements CreditSubCommand {
     public String getName() {
         return "set";
     }
+
+    @Override
+    public String getArgs() {
+        return "[Player Name] [Amount]";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Sets credits of a Player";
+    }
 }

@@ -21,4 +21,14 @@ public class AddCommand implements CreditSubCommand {
     public String getName() {
         return "add";
     }
+
+    @Override
+    public String getArgs() {
+        return "[Player Name] [Amount]";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Adds credits to a Player";
+    }
 }

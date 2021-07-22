@@ -22,4 +22,14 @@ public record ShopCommand(SolarCredit plugin) implements CreditSubCommand {
     public String getName() {
         return "shop";
     }
+
+    @Override
+    public String getArgs() {
+        return "";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Opens the credits shop for the day";
+    }
 }

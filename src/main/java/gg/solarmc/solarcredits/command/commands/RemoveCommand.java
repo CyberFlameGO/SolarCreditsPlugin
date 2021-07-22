@@ -20,4 +20,14 @@ public class RemoveCommand implements CreditSubCommand {
     public String getName() {
         return "remove";
     }
+
+    @Override
+    public String getArgs() {
+        return "[Player Name] [Amount]";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Removes credits from a Player";
+    }
 }

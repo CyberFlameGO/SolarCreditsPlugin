@@ -28,4 +28,14 @@ public class BalanceCommand implements CreditSubCommand {
     public String getName() {
         return "balance";
     }
+
+    @Override
+    public String getArgs() {
+        return "[Player Name/Optional]";
+    }
+
+    @Override
+    public String getDescription() {
+        return "See your ";
+    }
 }

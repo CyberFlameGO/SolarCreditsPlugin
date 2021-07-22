@@ -36,10 +36,9 @@ public class CreditCommands implements CommandExecutor {
         if (args.length == 0) {
             String commands = "Solar Credits Commands : \n" +
                     subCommands.stream()
-                            .map(CreditSubCommand::getName)
+                            .map(it -> ChatColor.BOLD + it.getName() + " " + it.getArgs() + " : " + it.getDescription())
                             .collect(Collectors.joining("\n")) +
                     "\n/credits <command>";
-            // TODO: make it look good
             sender.sendMessage(commands.split("\n"));
             return true;
         }
@@ -52,9 +51,8 @@ public class CreditCommands implements CommandExecutor {
 
             subCommand.execute(sender, subArgs.toArray(String[]::new), this.helper);
             return true;
-        } else {
+        } else
             sender.sendMessage("No Command for " + arg + " in credits");
-        }
         return true;
     }
 

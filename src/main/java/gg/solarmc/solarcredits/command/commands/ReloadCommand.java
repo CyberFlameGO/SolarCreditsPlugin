@@ -23,4 +23,16 @@ public record ReloadCommand(SolarCredit plugin) implements CreditSubCommand {
     public String getName() {
         return "reload";
     }
+
+    @Override
+    public String getArgs() {
+        return "";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Reloads the plugin";
+    }
+
+
 }
