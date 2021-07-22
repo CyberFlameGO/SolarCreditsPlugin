@@ -4,7 +4,11 @@ import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.RotatingItem;
 import gg.solarmc.solarcredits.SolarCredit;
+import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.config.Config;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,7 +25,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * itemName:
@@ -29,23 +32,25 @@ import java.util.stream.Collectors;
  * priceincredits:
  * command:
  * message:
- * displayName: OPTIONAL
- * lore: OPTIONAL
+ * displayName:
+ * lore:
  */
 public class RotatingShopMenu {
     private final Logger LOGGER = LoggerFactory.getLogger(RotatingShopMenu.class);
     private final SolarCredit plugin;
+    private final CommandHelper helper;
     private final Menu creditsShop;
     private long lastDay;
 
     private final List<RotatingItem> rotatingItems;
     private final List<Set<UUID>> playersInteracted = new ArrayList<>();
 
-    public RotatingShopMenu(SolarCredit plugin, Config config) {
+    public RotatingShopMenu(SolarCredit plugin, Config config, CommandHelper helper) {
         for (int i = 0; i < 4; i++) {
             playersInteracted.add(new HashSet<>());
         }
         this.plugin = plugin;
+        this.helper = helper;
         creditsShop = ChestMenu.builder(3)
                 .title("Credits Shop")
                 .build();
@@ -59,7 +64,7 @@ public class RotatingShopMenu {
         BigDecimal credits = player.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
         ItemStack balance = new ItemStack(Material.MAP);
         ItemMeta balMeta = balance.getItemMeta();
-        balMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "Balance : " + credits);
+        balMeta.displayName(Component.text("Balance : " + credits, NamedTextColor.RED, TextDecoration.BOLD));
         balance.setItemMeta(balMeta);
 
         creditsShop.getSlot(10).setItem(balance);
@@ -70,23 +75,22 @@ public class RotatingShopMenu {
 
             final ItemMeta itemMeta = item.getItemMeta();
             itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', rotatingItem.displayName()));
+            itemMeta.displayName(helper.translateColorCode(rotatingItem.displayName()));
 
             final Slot slot = creditsShop.getSlot(i + 12);
 
             if (playersInteracted.get(i).contains(player.getUniqueId())) {
-                itemMeta.setLore(List.of(ChatColor.GOLD + "Bought"));
+                itemMeta.lore(List.of(Component.text("Bought", NamedTextColor.GOLD, TextDecoration.ITALIC)));
                 item.setItemMeta(itemMeta);
                 slot.setItem(item);
                 continue;
             }
 
-            itemMeta.setLore(List.of(ChatColor.AQUA + "Price: " + rotatingItem.priceInCredits() + " credits"));
+            itemMeta.lore(List.of(Component.text("Price: " + rotatingItem.priceInCredits() + " credits", NamedTextColor.AQUA)));
 
             if (rotatingItem.lore() != null) {
-                final List<String> lore = itemMeta.getLore();
-                lore.addAll(rotatingItem.lore());
-                itemMeta.setLore(lore.stream().map(it -> ChatColor.translateAlternateColorCodes('&', it)).collect(Collectors.toList()));
+                final List<Component> components = rotatingItem.lore().stream().map(helper::translateColorCode).toList();
+                itemMeta.lore(components);
             }
 
             item.setItemMeta(itemMeta);
@@ -131,8 +135,6 @@ public class RotatingShopMenu {
                             } else
                                 player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                         })
-                        .thenRunSync(() -> {
-                        })
                         .exceptionally((ex) -> {
                             player.sendMessage(ChatColor.RED + "Something went wrong, please try again later...");
                             LOGGER.error("Exception in Credits Shop Transaction", ex);
@@ -142,7 +144,7 @@ public class RotatingShopMenu {
         };
 
         final ConfirmMenu confirmMenu = new ConfirmMenu.Builder(item)
-                .title(item.getItemMeta().getDisplayName())
+                .title(helper.stripColorCode(item.getItemMeta().displayName()))
                 .setMenuBefore(creditsShop)
                 .setOnConfirm(confirmed)
                 .build();

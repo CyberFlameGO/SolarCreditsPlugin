@@ -5,6 +5,9 @@ import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.SolarCredit;
 import gg.solarmc.solarcredits.config.CommandMessageConfig;
 import gg.solarmc.solarcredits.config.MessageConfig;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -135,5 +138,13 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
 
     public String translateToColor(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
+    }
+
+    public Component translateColorCode(String s) {
+        return LegacyComponentSerializer.legacy('&').deserialize(s);
+    }
+
+    public String stripColorCode(Component c) {
+        return PlainComponentSerializer.plain().serialize(c);
     }
 }

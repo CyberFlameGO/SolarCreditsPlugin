@@ -42,7 +42,7 @@ public class SolarCredit extends JavaPlugin {
 
         this.config = new Config(shopManager, messageManager);
         config.loadItems();
-        shop = new RotatingShopMenu(this, config);
+        shop = new RotatingShopMenu(this, config, helper);
 
         reloadConfig();
 

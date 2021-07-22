@@ -1,6 +1,7 @@
 package gg.solarmc.solarcredits.menus;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -8,7 +9,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.mask.Mask;
 import org.ipvp.canvas.mask.SolarMask;
-import org.ipvp.canvas.slot.Slot;
 import org.ipvp.canvas.type.ChestMenu;
 
 import java.util.function.Consumer;
@@ -55,12 +55,12 @@ public class ConfirmMenu {
 
             ItemStack deny = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
             final ItemMeta denyMeta = deny.getItemMeta();
-            denyMeta.setDisplayName(ChatColor.RED + "Deny");
+            denyMeta.displayName(Component.text("Deny", NamedTextColor.RED));
             deny.setItemMeta(denyMeta);
 
             ItemStack confirm = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 5);
             final ItemMeta confirmMeta = confirm.getItemMeta();
-            confirmMeta.setDisplayName(ChatColor.GREEN + "Confirm");
+            confirmMeta.displayName(Component.text("Confirm", NamedTextColor.GREEN));
             confirm.setItemMeta(confirmMeta);
 
             Mask mask = SolarMask.builder(confirmMenu)

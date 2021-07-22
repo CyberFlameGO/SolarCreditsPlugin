@@ -8,6 +8,9 @@ import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.command.CreditSubCommand;
 import gg.solarmc.solarcredits.config.CommandMessageConfig;
 import gg.solarmc.solarcredits.menus.ConfirmMenu;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -39,14 +42,14 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                 if (amount != -1) {
                     ItemStack giftCard = new ItemStack(Material.MAP);
                     ItemMeta giftMeta = giftCard.getItemMeta();
-                    giftMeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Gift Card");
-                    giftMeta.setLore(List.of(ChatColor.AQUA + "$" + helper.formatBigDecimal(amountInDecimal)));
+                    giftMeta.displayName(Component.text("Gift Card", NamedTextColor.GOLD, TextDecoration.BOLD));
+                    giftMeta.lore(List.of(Component.text("$" + helper.formatBigDecimal(amountInDecimal), NamedTextColor.AQUA)));
                     giftCard.setItemMeta(giftMeta);
 
                     Logger logger = helper.getLogger();
 
                     final ConfirmMenu confirmMenu = new ConfirmMenu.Builder(giftCard)
-                            .title(giftCard.getItemMeta().getDisplayName())
+                            .title(helper.stripColorCode(giftCard.getItemMeta().displayName()))
                             .setOnConfirm(c -> {
                                 if (c) {
                                     plugin.getServer().getDataCenter()
@@ -70,8 +73,7 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                                                 return null;
                                             });
                                 }
-                            })
-                            .build();
+                            }).build();
                     confirmMenu.open(player);
                 } else
                     sender.sendMessage(ChatColor.RED + "Sorry, but " + amountString + " is not a number!");

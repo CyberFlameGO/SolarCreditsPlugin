@@ -12,15 +12,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CreditCommands implements CommandExecutor {
-    private final SolarCredit plugin;
     private final List<CreditSubCommand> subCommands;
     private final CommandHelper helper;
 
     public CreditCommands(SolarCredit plugin, CommandHelper helper, String tebexSecret) {
-        this.plugin = plugin;
         subCommands = List.of(
                 new AddCommand(),
-                new BalanceCommand(),
+                new BalanceCommand(plugin),
                 new ReloadCommand(plugin),
                 new RemoveCommand(),
                 new SendCommand(plugin),
