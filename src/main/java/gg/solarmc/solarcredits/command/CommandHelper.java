@@ -18,14 +18,13 @@ import java.util.function.BiConsumer;
 
 public record CommandHelper(SolarCredit plugin, MessageConfig config) {
     private static final Logger LOGGER = LoggerFactory.getLogger(ThisClass.get());
-    private static final DecimalFormat df = new DecimalFormat("#,###.00");
 
     public Logger getLogger() {
         return LOGGER;
     }
 
     public String formatBigDecimal(BigDecimal number) {
-        return df.format(number);
+        return String.format("%,.2f", number.doubleValue());
     }
 
     public double getValidNumber(String strNum) {
