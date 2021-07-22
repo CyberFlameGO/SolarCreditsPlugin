@@ -8,15 +8,13 @@ import org.bukkit.command.CommandSender;
 
 public record ReloadCommand(SolarCredit plugin) implements CreditSubCommand {
     @Override
-    public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
+    public void execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender.hasPermission("credits.reload")) {
             plugin.reloadConfig();
             helper.getLogger().info("Reloaded Credits Plugin");
             sender.sendMessage(ChatColor.GREEN + "Reload Complete!");
         } else
             sender.sendMessage(ChatColor.RED + "You don't have permission to use this Command");
-
-        return true;
     }
 
     @Override

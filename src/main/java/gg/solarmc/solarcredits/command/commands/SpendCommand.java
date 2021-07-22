@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public record SpendCommand(SolarCredit plugin, String tebexSecret,
                            CommandMessageConfig config) implements CreditSubCommand {
     @Override
-    public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
+    public void execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player) {
             if (args.length >= 1) {
                 final String amountString = args[0];
@@ -79,8 +79,6 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                 sender.sendMessage(ChatColor.RED + "Please specify the Amount you want to use for the Gift Card");
         } else
             sender.sendMessage(ChatColor.RED + "Only Players use this Command");
-
-        return true;
     }
 
     /**

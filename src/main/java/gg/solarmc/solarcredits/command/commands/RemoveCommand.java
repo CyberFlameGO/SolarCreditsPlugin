@@ -7,13 +7,12 @@ import org.bukkit.command.CommandSender;
 
 public class RemoveCommand implements CreditSubCommand {
     @Override
-    public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
+    public void execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender.hasPermission("credits.remove"))
             helper.validateAndRun(sender, args,
                     (receiver, amount) -> helper.removeCredits(sender, receiver, amount));
         else
             sender.sendMessage(ChatColor.RED + "You don't have permission to use this Command");
-        return true;
     }
 
     @Override

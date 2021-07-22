@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public record SendCommand(SolarCredit plugin) implements CreditSubCommand {
     @Override
-    public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
+    public void execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player)
             helper.validateAndRun(sender, args,
                     (receiver, amount) -> {
@@ -18,8 +18,6 @@ public record SendCommand(SolarCredit plugin) implements CreditSubCommand {
                     });
         else
             sender.sendMessage(ChatColor.RED + "Only players can use this Command");
-
-        return true;
     }
 
     @Override

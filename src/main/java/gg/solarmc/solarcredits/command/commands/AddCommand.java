@@ -8,13 +8,12 @@ import org.bukkit.command.CommandSender;
 public class AddCommand implements CreditSubCommand {
 
     @Override
-    public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
+    public void execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender.hasPermission("credits.add"))
             helper.validateAndRun(sender, args,
                     (receiver, amount) -> helper.addCredits(sender, receiver, amount));
         else
             sender.sendMessage(ChatColor.RED + "You don't have permission to use this Command");
-        return true;
     }
 
     @Override

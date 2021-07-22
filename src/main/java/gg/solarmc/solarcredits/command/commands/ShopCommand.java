@@ -9,13 +9,11 @@ import org.bukkit.entity.Player;
 
 public record ShopCommand(SolarCredit plugin) implements CreditSubCommand {
     @Override
-    public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
+    public void execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player)
             plugin.getShop().openShop(player);
         else
             sender.sendMessage(ChatColor.RED + "Only Players use this Command");
-
-        return true;
     }
 
     @Override
