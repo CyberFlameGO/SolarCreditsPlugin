@@ -10,6 +10,7 @@ import gg.solarmc.solarcredits.menus.RotatingShopMenu;
 import gg.solarmc.solarcredits.placeholder.CreditsBalance;
 import okhttp3.OkHttpClient;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.ipvp.canvas.MenuFunctionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +30,15 @@ public class SolarCredit extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        backupRotatingShop("rotatingshop.yml", "rotatingShop.backup.yml");
-
         Path dataFolder = this.getDataFolder().toPath();
         ConfigManager<RotatingShopConfig> shopManager = ConfigManager.create(dataFolder, "rotatingshop.yml", RotatingShopConfig.class);
         messageManager = ConfigManager.create(dataFolder, "messageconfig.yml", MessageConfig.class);
+        shopManager.reloadConfig();
         messageManager.reloadConfig();
+
         helper = new CommandHelper(this, messageManager.getConfigData());
+
+        backupRotatingShop("rotatingshop.yml", "rotatingShop.backup.yml");
 
         this.config = new Config(shopManager, messageManager);
         config.loadItems();
@@ -50,6 +53,7 @@ public class SolarCredit extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        getServer().getPluginManager().registerEvents(new MenuFunctionListener(), this);
 
         okHttpClient = new OkHttpClient();
 
@@ -66,6 +70,7 @@ public class SolarCredit extends JavaPlugin {
 
     @Override
     public void reloadConfig() {
+        backupRotatingShop("rotatingshop.yml", "rotatingShop.backup.yml");
         messageManager.reloadConfig();
         config.loadItems();
         String TEBEX_SECRET = config.getShopConfig().tebexSecret();

@@ -19,6 +19,6 @@ public class SetCommand implements CreditSubCommand {
 
     @Override
     public String getName() {
-        return null;
+        return "set";
     }
 }

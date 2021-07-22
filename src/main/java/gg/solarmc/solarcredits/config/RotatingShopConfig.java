@@ -8,8 +8,8 @@ import java.util.Map;
 
 public interface RotatingShopConfig {
 
-    static Map<String, @SubSection ItemConfig> setDefaultItem(@SubSection ItemConfig defaultGiftsSection) {
-        return Map.of("Item", defaultGiftsSection);
+    static Map<String, @SubSection ItemConfig> setDefaultItem(@SubSection ItemConfig defaultConfig) {
+        return Map.of("Item", defaultConfig);
     }
 
     @ConfKey("tebex.secret")

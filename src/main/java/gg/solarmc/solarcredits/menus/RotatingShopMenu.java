@@ -70,7 +70,7 @@ public class RotatingShopMenu {
 
             final ItemMeta itemMeta = item.getItemMeta();
             itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemMeta.setDisplayName(rotatingItem.displayName() == null ? rotatingItem.name() : ChatColor.translateAlternateColorCodes('&', rotatingItem.displayName()));
+            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', rotatingItem.displayName()));
 
             final Slot slot = creditsShop.getSlot(i + 12);
 
@@ -99,6 +99,12 @@ public class RotatingShopMenu {
                     p.sendMessage(ChatColor.RED + "You can not buy this Item Again!!");
                     return;
                 }
+
+                if (rotatingItem.command().replace("/", "").startsWith("give") && player.getInventory().firstEmpty() == -1) {
+                    p.sendMessage("Your inventory is full!");
+                    return;
+                }
+
                 openConfirmMenu(p, slotId, item, rotatingItem);
             });
         }
@@ -115,11 +121,15 @@ public class RotatingShopMenu {
                             final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.priceInCredits()));
                             if (result.isSuccessful()) {
                                 // Bukkit.dispatchCommand(console, rotatingItem.getCommand());
-                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.command());
+                                // TODO: Fix Command Dispatched Async (http://bit.ly/1oSiM6C)
+                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.command().replace("@p", player.getName()));
                                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
-                            } else {
+
+                                Set<UUID> uuids = playersInteracted.get(slotId);
+                                uuids.add(player.getUniqueId());
+                                playersInteracted.set(slotId, uuids);
+                            } else
                                 player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
-                            }
                         })
                         .thenRunSync(() -> {
                         })
@@ -128,10 +138,6 @@ public class RotatingShopMenu {
                             LOGGER.error("Exception in Credits Shop Transaction", ex);
                             return null;
                         });
-
-                final Set<UUID> uuids = playersInteracted.get(slotId);
-                uuids.add(player.getUniqueId());
-                playersInteracted.set(slotId, uuids);
             }
         };
 

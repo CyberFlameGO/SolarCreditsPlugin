@@ -14,6 +14,9 @@ public class BalanceCommand implements CreditSubCommand {
     public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player) {
             final BigDecimal balance = player.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
+
+
+
             sender.sendMessage(ChatColor.GREEN + "Your balance is : " + helper.formatBigDecimal(balance));
         } else
             sender.sendMessage(ChatColor.RED + "Only Players use this Command");

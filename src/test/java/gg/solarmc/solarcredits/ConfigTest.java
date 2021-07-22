@@ -19,14 +19,14 @@ public class ConfigTest {
         ConfigManager<RotatingShopConfig> manager = ConfigManager.create(Path.of("src", "test", "resources"), "rotatingshop.yml", RotatingShopConfig.class);
         Config config = new Config(manager, null);
         config.loadItems();
-        final String name = config.getRotatingItems().get(0).name();
+        final String name = config.getRotatingItems().get(0).displayName();
 
         final RotatingShopConfig data = manager.getConfigData();
 
         Assertions.assertAll(
                 () -> assertEquals("ABCxyz", data.tebexSecret()),
-                () -> assertEquals("Item", name),
-                () -> assertEquals("diamond_sword", data.items().get("Item").material())
+                () -> assertEquals("&l&cA Normal Sword", name),
+                () -> assertEquals("diamond_sword", data.items().get("1").material())
         );
     }
 
@@ -36,11 +36,11 @@ public class ConfigTest {
         manager.reloadConfig();
 
         final Map<String, @SubSection ItemConfig> items = manager.getConfigData().items();
-        final ItemConfig item = items.get("Item");
+        final ItemConfig item = items.get("1");
 
         Assertions.assertAll(
                 () -> assertEquals("diamond_sword", item.material()),
-                () -> assertEquals(5.0, item.priceInCredits())
+                () -> assertEquals(3.0, item.priceInCredits())
         );
     }
 }

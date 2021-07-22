@@ -22,25 +22,27 @@ public class Config {
         shopManager.reloadConfig();
         rotatingItems = new ArrayList<>();
 
-        Map<String, @SubSection ItemConfig> items = shopManager.getConfigData().items();
+        final List<Map.Entry<String, @SubSection ItemConfig>> items = shopManager.getConfigData().items().entrySet()
+                .stream().sorted(Map.Entry.comparingByKey()).toList();
 
-        items.forEach((key, value) -> {
+        items.forEach(it -> {
+            ItemConfig value = it.getValue();
+
             Material material = Material.matchMaterial(value.material());
             double price = value.priceInCredits();
             String command = value.command();
             String message = value.message();
-            final String display = value.displayName();
-            String displayName = display.isEmpty() ? key : display;
+            String displayName = value.displayName();
             List<String> lore = value.lore();
 
             if (value.material().isEmpty()
                     || price == -1
                     || command.isEmpty()
                     || message.isEmpty()) {
-                throw new NullPointerException("Missing key from " + key + " in rotatingshop.yml");
+                throw new NullPointerException("Missing key from " + it + " in rotatingshop.yml");
             }
 
-            final RotatingItem item = new RotatingItem(key, material, price, command, message, displayName, lore);
+            final RotatingItem item = new RotatingItem(material, price, command, message, displayName, lore);
             rotatingItems.add(item);
         });
     }

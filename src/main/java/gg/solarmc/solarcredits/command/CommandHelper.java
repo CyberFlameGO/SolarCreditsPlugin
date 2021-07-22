@@ -46,7 +46,7 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
      * Only for transaction commands like send, add, remove and set
      */
     public void validateAndRun(CommandSender sender, String[] args, BiConsumer<Player, Double> transaction) {
-        if (args.length >= 3) {
+        if (args.length >= 2) {
             String playerName = args[0];
             double amount = getValidNumber(args[1]);
 

@@ -12,7 +12,10 @@ public record SendCommand(SolarCredit plugin) implements CreditSubCommand {
     public boolean execute(CommandSender sender, String[] args, CommandHelper helper) {
         if (sender instanceof Player player)
             helper.validateAndRun(sender, args,
-                    (receiver, amount) -> helper.sendCredits(player, receiver, amount));
+                    (receiver, amount) -> {
+                        helper.sendCredits(player, receiver, amount);
+                        receiver.sendMessage(ChatColor.GREEN + "You received " + amount + " from " + sender.getName());
+                    });
         else
             sender.sendMessage(ChatColor.RED + "Only players can use this Command");
 
