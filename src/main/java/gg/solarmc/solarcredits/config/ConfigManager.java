@@ -11,17 +11,20 @@ import space.arim.dazzleconf.ext.snakeyaml.SnakeYamlConfigurationFactory;
 import space.arim.dazzleconf.ext.snakeyaml.SnakeYamlOptions;
 import space.arim.dazzleconf.helper.ConfigurationHelper;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 public final class ConfigManager<C> {
     private final ConfigurationHelper<C> configHelper;
+    private final Path filePath;
     private C configData;
     private final Logger LOGGER = LoggerFactory.getLogger(ConfigManager.class);
 
-    private ConfigManager(ConfigurationHelper<C> configHelper) {
+    private ConfigManager(ConfigurationHelper<C> configHelper, Path filePath) {
         this.configHelper = configHelper;
+        this.filePath = filePath;
     }
 
     public static <C> ConfigManager<C> create(Path configFolder, String fileName, Class<C> configClass) {
@@ -32,7 +35,7 @@ public final class ConfigManager<C> {
                 configClass,
                 ConfigurationOptions.defaults(),
                 yamlOptions);
-        return new ConfigManager<>(new ConfigurationHelper<>(configFolder, fileName, configFactory));
+        return new ConfigManager<>(new ConfigurationHelper<>(configFolder, fileName, configFactory), configFolder.resolve(fileName));
     }
 
     public void reloadConfig() {
@@ -48,6 +51,15 @@ public final class ConfigManager<C> {
             configData = configHelper.getFactory().loadDefaults();
             LOGGER.error("One of the values in your configuration is not valid. "
                     + "Check to make sure you have specified the right data types.", ex);
+        }
+    }
+
+    public void writeConfig(C configData) {
+        try (final FileOutputStream output = new FileOutputStream(filePath.toFile())) {
+            configHelper.getFactory().write(configData, output);
+            LOGGER.info("Wrote last day of the Rotate :D");
+        } catch (IOException e) {
+            LOGGER.error("Something went wrong when writing Config", e);
         }
     }
 

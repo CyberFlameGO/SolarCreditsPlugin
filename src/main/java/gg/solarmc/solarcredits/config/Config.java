@@ -1,6 +1,9 @@
 package gg.solarmc.solarcredits.config;
 
 import gg.solarmc.solarcredits.RotatingItem;
+import gg.solarmc.solarcredits.config.configs.ItemConfig;
+import gg.solarmc.solarcredits.config.configs.MessageConfig;
+import gg.solarmc.solarcredits.config.configs.RotatingShopConfig;
 import org.bukkit.Material;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -29,6 +32,10 @@ public class Config {
             ItemConfig value = it.getValue();
 
             Material material = Material.matchMaterial(value.material());
+
+            if (material == null)
+                throw new NullPointerException("Material from key " + it.getKey() + " is not valid");
+
             double price = value.priceInCredits();
             String command = value.command();
             String message = value.message();
@@ -38,11 +45,10 @@ public class Config {
             if (value.material().isEmpty()
                     || price == -1
                     || command.isEmpty()
-                    || message.isEmpty()) {
-                throw new NullPointerException("Missing key from " + it + " in rotatingshop.yml");
-            }
+                    || message.isEmpty())
+                throw new NullPointerException("Missing key from " + it.getKey() + " in rotatingshop.yml");
 
-            final RotatingItem item = new RotatingItem(material, price, command, message, displayName, lore);
+            final RotatingItem item = new RotatingItem(it.getKey(), material, price, command, message, displayName, lore);
             rotatingItems.add(item);
         });
     }

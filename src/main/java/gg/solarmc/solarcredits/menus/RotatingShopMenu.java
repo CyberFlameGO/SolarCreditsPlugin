@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -117,21 +118,24 @@ public class RotatingShopMenu {
     }
 
     public void openConfirmMenu(Player player, int slotId, ItemStack item, RotatingItem rotatingItem) {
-        // player.closeInventory();
         final Consumer<Boolean> confirmed = (c) -> {
             if (c) {
-                plugin.getServer().getDataCenter()
+                Server server = plugin.getServer();
+                server.getDataCenter()
                         .runTransact((transaction) -> {
                             final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.priceInCredits()));
                             if (result.isSuccessful()) {
-                                // Bukkit.dispatchCommand(console, rotatingItem.getCommand());
-                                // TODO: Fix Command Dispatched Async (http://bit.ly/1oSiM6C)
-                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), rotatingItem.command().replace("@p", player.getName()));
-                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
+                                if (helper.dispatchCommand(server, rotatingItem.command().replace("@p", player.getName()))) {
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
 
-                                Set<UUID> uuids = playersInteracted.get(slotId);
-                                uuids.add(player.getUniqueId());
-                                playersInteracted.set(slotId, uuids);
+                                    Set<UUID> uuids = playersInteracted.get(slotId);
+                                    uuids.add(player.getUniqueId());
+                                    playersInteracted.set(slotId, uuids);
+                                    return;
+                                }
+
+                                player.sendMessage(ChatColor.RED + "Something went wrong, please report this to Admins");
+                                LOGGER.error("There was a problem dispatching a command from key " + rotatingItem.key() + " in rotatingshop.yml");
                             } else
                                 player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                         })
@@ -152,9 +156,18 @@ public class RotatingShopMenu {
         confirmMenu.open(player);
     }
 
+    public RotatingShopMenu setLastDay(long lastDay) {
+        this.lastDay = lastDay;
+        return this;
+    }
+
+    public long getLastDay() {
+        return lastDay;
+    }
+
     public RotatingItem[] getItems() {
         final long days = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis());
-        if (lastDay - days == 1) {
+        if (lastDay < days) {
             playersInteracted.clear();
             lastDay = days;
         }

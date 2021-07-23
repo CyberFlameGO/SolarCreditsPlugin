@@ -4,8 +4,9 @@ import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.command.CreditCommands;
 import gg.solarmc.solarcredits.config.Config;
 import gg.solarmc.solarcredits.config.ConfigManager;
-import gg.solarmc.solarcredits.config.MessageConfig;
-import gg.solarmc.solarcredits.config.RotatingShopConfig;
+import gg.solarmc.solarcredits.config.configs.LastRotateConfig;
+import gg.solarmc.solarcredits.config.configs.MessageConfig;
+import gg.solarmc.solarcredits.config.configs.RotatingShopConfig;
 import gg.solarmc.solarcredits.menus.RotatingShopMenu;
 import gg.solarmc.solarcredits.placeholder.CreditsBalance;
 import okhttp3.OkHttpClient;
@@ -23,29 +24,38 @@ import java.nio.file.Path;
 public class SolarCredit extends JavaPlugin {
     private OkHttpClient okHttpClient;
     private Config config;
+    private ConfigManager<MessageConfig> messageManager;
+    private ConfigManager<LastRotateConfig> lastRotateManager;
+
     private RotatingShopMenu shop;
     private CommandHelper helper;
-    private ConfigManager<MessageConfig> messageManager;
     private final Logger LOGGER = LoggerFactory.getLogger(SolarCredit.class);
 
     @Override
     public void onEnable() {
+        okHttpClient = new OkHttpClient();
+
+        // Config
         Path dataFolder = this.getDataFolder().toPath();
+
         ConfigManager<RotatingShopConfig> shopManager = ConfigManager.create(dataFolder, "rotatingshop.yml", RotatingShopConfig.class);
         messageManager = ConfigManager.create(dataFolder, "messageconfig.yml", MessageConfig.class);
+        lastRotateManager = ConfigManager.create(dataFolder, "lastRotateConfig.yml", LastRotateConfig.class);
         shopManager.reloadConfig();
         messageManager.reloadConfig();
+        lastRotateManager.reloadConfig();
 
         helper = new CommandHelper(this, messageManager.getConfigData());
-
         backupRotatingShop("rotatingshop.yml", "rotatingShop.backup.yml");
 
-        this.config = new Config(shopManager, messageManager);
+        config = new Config(shopManager, messageManager);
         config.loadItems();
-        shop = new RotatingShopMenu(this, config, helper);
+
+        shop = new RotatingShopMenu(this, config, helper).setLastDay(lastRotateManager.getConfigData().lastRotateDay());
 
         reloadConfig();
 
+        // Place holder Api
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new CreditsBalance(this, helper).register();
         } else {
@@ -53,19 +63,19 @@ public class SolarCredit extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        // Events
         getServer().getPluginManager().registerEvents(new MenuFunctionListener(), this);
-
-        okHttpClient = new OkHttpClient();
-
-        String TEBEX_SECRET = shopManager.getConfigData().tebexSecret();
-        getCommand("credits").setExecutor(new CreditCommands(this, helper, TEBEX_SECRET));
 
         LOGGER.info("SolarCredits Started");
     }
 
     @Override
     public void onDisable() {
+        long lastDay = shop.getLastDay();
+        lastRotateManager.writeConfig(() -> lastDay);
 
+        LOGGER.info("Successfully Disabled");
     }
 
     @Override

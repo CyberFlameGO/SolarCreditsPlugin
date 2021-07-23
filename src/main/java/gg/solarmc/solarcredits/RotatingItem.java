@@ -4,7 +4,7 @@ import org.bukkit.Material;
 
 import java.util.List;
 
-public record RotatingItem(Material material, double priceInCredits,
+public record RotatingItem(String key, Material material, double priceInCredits,
                            String command, String message, String displayName,
                            List<String> lore) {
     public RotatingItem {

@@ -51,7 +51,7 @@ items:
     lore:
       - "&aEasy"
   7:
-    material: diamond_shovel
+    material: diamond_spade
     priceincredits: 1
     command: give @p diamond_shovel
     message: "You were given a Diamond Shovel"

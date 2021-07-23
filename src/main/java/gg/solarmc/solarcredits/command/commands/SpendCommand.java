@@ -6,7 +6,7 @@ import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.SolarCredit;
 import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.command.CreditSubCommand;
-import gg.solarmc.solarcredits.config.CommandMessageConfig;
+import gg.solarmc.solarcredits.config.configs.CommandMessageConfig;
 import gg.solarmc.solarcredits.menus.ConfirmMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

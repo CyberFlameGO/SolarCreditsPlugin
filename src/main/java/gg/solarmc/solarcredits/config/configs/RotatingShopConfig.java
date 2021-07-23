@@ -1,5 +1,6 @@
-package gg.solarmc.solarcredits.config;
+package gg.solarmc.solarcredits.config.configs;
 
+import gg.solarmc.solarcredits.config.configs.ItemConfig;
 import space.arim.dazzleconf.annote.ConfDefault;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;

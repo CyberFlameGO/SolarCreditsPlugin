@@ -3,12 +3,13 @@ package gg.solarmc.solarcredits.command;
 import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.SolarCredit;
-import gg.solarmc.solarcredits.config.CommandMessageConfig;
-import gg.solarmc.solarcredits.config.MessageConfig;
+import gg.solarmc.solarcredits.config.configs.CommandMessageConfig;
+import gg.solarmc.solarcredits.config.configs.MessageConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import space.arim.omnibus.util.ThisClass;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
 public record CommandHelper(SolarCredit plugin, MessageConfig config) {
@@ -146,5 +147,16 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
 
     public String stripColorCode(Component c) {
         return PlainComponentSerializer.plain().serialize(c);
+    }
+
+    public boolean dispatchCommand(Server server, String command) {
+        try {
+            return server.getScheduler().callSyncMethod(plugin,
+                    () -> server.dispatchCommand(server.getConsoleSender(), command.replaceFirst("^/", ""))
+            ).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error("Something went wrong Dispatching a command, Check if the command is correct " + command, e);
+            return false;
+        }
     }
 }

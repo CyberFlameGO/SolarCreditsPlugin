@@ -34,7 +34,7 @@ public class CreditCommands implements CommandExecutor {
         if (args.length == 0) {
             String commands = "Solar Credits Commands : \n" +
                     subCommands.stream()
-                            .map(it -> ChatColor.BOLD + it.getName() + " " + it.getArgs() + " : " + it.getDescription())
+                            .map(it -> ChatColor.BOLD + it.getName() + ChatColor.RESET + " " + it.getArgs() + " : " + it.getDescription())
                             .collect(Collectors.joining("\n")) +
                     "\n/credits <command>";
             sender.sendMessage(commands.split("\n"));
