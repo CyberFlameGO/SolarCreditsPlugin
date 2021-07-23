@@ -4,9 +4,7 @@ import gg.solarmc.solarcredits.command.CommandHelper;
 import gg.solarmc.solarcredits.command.CreditCommands;
 import gg.solarmc.solarcredits.config.Config;
 import gg.solarmc.solarcredits.config.ConfigManager;
-import gg.solarmc.solarcredits.config.configs.LastRotateConfig;
-import gg.solarmc.solarcredits.config.configs.MessageConfig;
-import gg.solarmc.solarcredits.config.configs.RotatingShopConfig;
+import gg.solarmc.solarcredits.config.configs.*;
 import gg.solarmc.solarcredits.menus.RotatingShopMenu;
 import gg.solarmc.solarcredits.placeholder.CreditsBalance;
 import okhttp3.OkHttpClient;
@@ -20,12 +18,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SolarCredit extends JavaPlugin {
     private OkHttpClient okHttpClient;
     private Config config;
     private ConfigManager<MessageConfig> messageManager;
-    private ConfigManager<LastRotateConfig> lastRotateManager;
+    private ConfigManager<LastRotateFile> lastRotateManager;
 
     private RotatingShopMenu shop;
     private CommandHelper helper;
@@ -40,7 +40,7 @@ public class SolarCredit extends JavaPlugin {
 
         ConfigManager<RotatingShopConfig> shopManager = ConfigManager.create(dataFolder, "rotatingshop.yml", RotatingShopConfig.class);
         messageManager = ConfigManager.create(dataFolder, "messageconfig.yml", MessageConfig.class);
-        lastRotateManager = ConfigManager.create(dataFolder, "lastRotateConfig.yml", LastRotateConfig.class);
+        lastRotateManager = ConfigManager.create(dataFolder, "lastRotate.yml", LastRotateFile.class);
         shopManager.reloadConfig();
         messageManager.reloadConfig();
         lastRotateManager.reloadConfig();
@@ -51,7 +51,14 @@ public class SolarCredit extends JavaPlugin {
         config = new Config(shopManager, messageManager);
         config.loadItems();
 
-        shop = new RotatingShopMenu(this, config, helper).setLastDay(lastRotateManager.getConfigData().lastRotateDay());
+        final LastRotateFile lastRotateData = lastRotateManager.getConfigData();
+        final List<Set<UUID>> playersInteracted = new ArrayList<>(4);
+        lastRotateData.playersInteracted().forEach((key, value) -> playersInteracted.set(Integer.parseInt(key), value.playerUUIDs().stream().map(UUID::fromString).collect(Collectors.toSet())));
+
+
+        shop = new RotatingShopMenu(this, config, helper)
+                .setLastDay(lastRotateData.lastRotateDay())
+                .setPlayersInteracted(playersInteracted);
 
         reloadConfig();
 
@@ -73,9 +80,21 @@ public class SolarCredit extends JavaPlugin {
     @Override
     public void onDisable() {
         long lastDay = shop.getLastDay();
-        lastRotateManager.writeConfig(() -> lastDay);
+        final List<Set<UUID>> players = shop.getPlayersInteracted();
+
+        final Map<String, PlayersInteracted> playersInteracted = Map.of(
+                "0", () -> convertUUIDs(players.get(0)),
+                "1", () -> convertUUIDs(players.get(1)),
+                "2", () -> convertUUIDs(players.get(2)),
+                "3", () -> convertUUIDs(players.get(3))
+        );
+        lastRotateManager.writeConfig(new LastRotateFileImpl(lastDay, playersInteracted));
 
         LOGGER.info("Successfully Disabled");
+    }
+
+    private List<String> convertUUIDs(Set<UUID> list) {
+        return list.stream().map(UUID::toString).toList();
     }
 
     @Override

@@ -45,12 +45,11 @@ public class RotatingShopMenu {
     private long lastDay;
 
     private final List<RotatingItem> rotatingItems;
-    private final List<Set<UUID>> playersInteracted = new ArrayList<>();
+    private final List<Set<UUID>> playersInteracted = new LinkedList<>();
 
     public RotatingShopMenu(SolarCredit plugin, Config config, CommandHelper helper) {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++)
             playersInteracted.add(new HashSet<>());
-        }
         this.plugin = plugin;
         this.helper = helper;
         creditsShop = ChestMenu.builder(3)
@@ -171,12 +170,21 @@ public class RotatingShopMenu {
         return lastDay;
     }
 
+    public RotatingShopMenu setPlayersInteracted(List<Set<UUID>> playersInteracted) {
+        Collections.copy(this.playersInteracted, playersInteracted);
+        return this;
+    }
+
+    public List<Set<UUID>> getPlayersInteracted() {
+        return playersInteracted;
+    }
+
     public String getTimeRemainingForRotate() {
         final long milliDay = TimeUnit.DAYS.toMillis(1);
         long timeRemaining = (milliDay - (Instant.now().toEpochMilli() % milliDay)) / 1000;
 
         long mins = timeRemaining / 60 % 60;
-        long hours = (timeRemaining - mins) / 60;
+        long hours = (timeRemaining - mins) / 3600;
 
         return String.format("%s H %s M Remaining for Rotation", hours, mins);
     }
@@ -184,7 +192,7 @@ public class RotatingShopMenu {
     public RotatingItem[] getItems() {
         final long days = TimeUnit.MILLISECONDS.toDays(Instant.now().toEpochMilli());
         if (lastDay < days) {
-            playersInteracted.clear();
+            Collections.fill(playersInteracted, new HashSet<>());
             lastDay = days;
         }
         final int group = ((int) days % (rotatingItems.size() / 4)) * 4;
