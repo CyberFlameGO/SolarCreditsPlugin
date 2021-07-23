@@ -53,11 +53,18 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
             String playerName = args[0];
             double amount = getValidNumber(args[1]);
 
+            if (amount == 0) {
+                sender.sendMessage(ChatColor.RED + "Your amount can't be 0");
+                return;
+            }
+
             if (amount != -1) {
                 Player receiver = plugin.getServer().getPlayerExact(playerName);
 
-                if (receiver == null)
+                if (receiver == null) {
                     sender.sendMessage(ChatColor.RED + "Sorry, but I'm not able to find the player " + playerName + " !");
+                    return;
+                }
 
                 transaction.accept(receiver, amount);
             } else

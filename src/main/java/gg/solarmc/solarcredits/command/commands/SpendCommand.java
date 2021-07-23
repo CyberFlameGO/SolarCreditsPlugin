@@ -33,6 +33,12 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                            CommandMessageConfig config) implements CreditSubCommand {
     @Override
     public void execute(CommandSender sender, String[] args, CommandHelper helper) {
+        if (tebexSecret == null || tebexSecret.isEmpty()) {
+            sender.sendMessage("Please report this to a Admin, Tebex Secret is not Specified");
+            helper.getLogger().warn("Please specify your Tebex Secret in the config!!");
+            return;
+        }
+
         if (sender instanceof Player player) {
             if (args.length >= 1) {
                 final String amountString = args[0];
@@ -40,7 +46,7 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                 final BigDecimal amountInDecimal = BigDecimal.valueOf(amount);
 
                 if (amount != -1) {
-                    ItemStack giftCard = new ItemStack(Material.MAP);
+                    ItemStack giftCard = new ItemStack(Material.PAPER);
                     ItemMeta giftMeta = giftCard.getItemMeta();
                     giftMeta.displayName(Component.text("Gift Card", NamedTextColor.GOLD, TextDecoration.BOLD));
                     giftMeta.lore(List.of(Component.text("$" + helper.formatBigDecimal(amountInDecimal), NamedTextColor.AQUA)));
@@ -99,7 +105,7 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                     .build();
 
             try (Response response = plugin.getOkHttpClient().newCall(request).execute()) {
-                if (response.code() == 403) {
+                if (response.code() != 200) {
                     plugin.getServer().getDataCenter()
                             .runTransact(transaction -> sender.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction, BigDecimal.valueOf(amount)))
                             .thenRunSync(() -> sendError(sender))
@@ -107,6 +113,8 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                                 logger.error("Failed to add {} into account of {}", amount, sender.getName(), e);
                                 return null;
                             });
+                    sender.sendMessage(Component.text("Something went wrong creating a giftcard! Report this to a admin rn!! :)"));
+                    logger.error("Failed to create a gift card (Check your tebex secret?)");
                     return;
                 }
 
