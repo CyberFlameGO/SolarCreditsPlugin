@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -63,9 +64,14 @@ public class RotatingShopMenu {
         RotatingItem[] items = getItems();
 
         BigDecimal credits = player.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
-        ItemStack balance = new ItemStack(Material.MAP);
+        ItemStack balance = new ItemStack(Material.PAPER);
         ItemMeta balMeta = balance.getItemMeta();
         balMeta.displayName(Component.text("Balance : " + credits, NamedTextColor.RED, TextDecoration.BOLD));
+        balMeta.lore(List.of(
+                Component.text("[", NamedTextColor.WHITE, TextDecoration.BOLD)
+                        .append(Component.text(getTimeRemainingForRotate(), NamedTextColor.GREEN)
+                                .append(Component.text("]", NamedTextColor.WHITE, TextDecoration.BOLD))))
+        );
         balance.setItemMeta(balMeta);
 
         creditsShop.getSlot(10).setItem(balance);
@@ -165,8 +171,18 @@ public class RotatingShopMenu {
         return lastDay;
     }
 
+    public String getTimeRemainingForRotate() {
+        final long milliDay = TimeUnit.DAYS.toMillis(1);
+        long timeRemaining = (milliDay - (Instant.now().toEpochMilli() % milliDay)) / 1000;
+
+        long mins = timeRemaining / 60 % 60;
+        long hours = (timeRemaining - mins) / 60;
+
+        return String.format("%s H %s M Remaining for Rotation", hours, mins);
+    }
+
     public RotatingItem[] getItems() {
-        final long days = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis());
+        final long days = TimeUnit.MILLISECONDS.toDays(Instant.now().toEpochMilli());
         if (lastDay < days) {
             playersInteracted.clear();
             lastDay = days;
