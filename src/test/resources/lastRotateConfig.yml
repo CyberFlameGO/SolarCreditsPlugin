@@ -2,6 +2,9 @@
  # This is the last day when the shop was rotated
 lastRotateDay: 1
 playersInteracted:
+  3:
+    players: []
+
   2:
     players: []
 
@@ -9,9 +12,6 @@ playersInteracted:
     players: []
 
   0:
-    players: []
-
-  3:
     players: []
 
 

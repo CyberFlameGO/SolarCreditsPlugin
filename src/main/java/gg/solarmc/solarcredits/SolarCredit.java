@@ -53,8 +53,12 @@ public class SolarCredit extends JavaPlugin {
 
         final LastRotateFile lastRotateData = lastRotateManager.getConfigData();
         final List<Set<UUID>> playersInteracted = new ArrayList<>(4);
-        lastRotateData.playersInteracted().forEach((key, value) -> playersInteracted.set(Integer.parseInt(key), value.playerUUIDs().stream().map(UUID::fromString).collect(Collectors.toSet())));
+        for (int i = 0; i < 4; i++) playersInteracted.add(new HashSet<>());
 
+        lastRotateData.playersInteracted()
+                .forEach((key, value) ->
+                        playersInteracted.set(Integer.parseInt(key),
+                                value.playerUUIDs().stream().map(UUID::fromString).collect(Collectors.toSet())));
 
         shop = new RotatingShopMenu(this, config, helper)
                 .setLastDay(lastRotateData.lastRotateDay())
@@ -88,6 +92,7 @@ public class SolarCredit extends JavaPlugin {
                 "2", () -> convertUUIDs(players.get(2)),
                 "3", () -> convertUUIDs(players.get(3))
         );
+
         lastRotateManager.writeConfig(new LastRotateFileImpl(lastDay, playersInteracted));
 
         LOGGER.info("Successfully Disabled");

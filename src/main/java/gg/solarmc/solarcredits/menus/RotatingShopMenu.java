@@ -192,7 +192,9 @@ public class RotatingShopMenu {
     public RotatingItem[] getItems() {
         final long days = TimeUnit.MILLISECONDS.toDays(Instant.now().toEpochMilli());
         if (lastDay < days) {
-            Collections.fill(playersInteracted, new HashSet<>());
+            playersInteracted.clear();
+            for (int i = 0; i < 4; i++) playersInteracted.add(new HashSet<>());
+
             lastDay = days;
         }
         final int group = ((int) days % (rotatingItems.size() / 4)) * 4;
