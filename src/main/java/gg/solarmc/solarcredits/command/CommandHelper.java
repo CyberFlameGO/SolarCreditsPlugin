@@ -1,5 +1,6 @@
 package gg.solarmc.solarcredits.command;
 
+import gg.solarmc.loader.SolarPlayer;
 import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.loader.credits.WithdrawResult;
 import gg.solarmc.solarcredits.SolarCredit;
@@ -48,7 +49,7 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
     /**
      * Only for transaction commands like send, add, remove and set
      */
-    public void validateAndRun(CommandSender sender, String[] args, BiConsumer<Player, Double> transaction) {
+    public void validateAndRun(CommandSender sender, String[] args, BiConsumer<SolarPlayer, Double> transaction) {
         if (args.length >= 2) {
             String playerName = args[0];
             double amount = getValidNumber(args[1]);
@@ -59,14 +60,20 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
             }
 
             if (amount != -1) {
-                Player receiver = plugin.getServer().getPlayerExact(playerName);
+                plugin.getServer().getDataCenter().lookupPlayer(playerName).thenApplyAsync((it) -> {
+                    SolarPlayer receiver = it.orElse(null);
 
-                if (receiver == null) {
-                    sender.sendMessage(ChatColor.RED + "Sorry, but I'm not able to find the player " + playerName + " !");
-                    return;
-                }
+                    if (receiver == null) {
+                        sender.sendMessage(ChatColor.RED + "Sorry, but I'm not able to find the player " + playerName + " !");
+                        return null;
+                    }
 
-                transaction.accept(receiver, amount);
+                    transaction.accept(receiver, amount);
+                    return null;
+                }).exceptionally((ex) -> {
+                    LOGGER.error("Something went wrong looking up for a Player", ex);
+                    return null;
+                });
             } else
                 sender.sendMessage(ChatColor.RED + "Sorry, but " + amount + " is not a number!");
         } else {
@@ -74,14 +81,14 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
         }
     }
 
-    public void sendCredits(Player sender, Player receiver, double amount) {
+    public void sendCredits(Player sender, SolarPlayer receiver, double amount) {
         CommandMessageConfig sendConfig = getMessageConfig("send");
         plugin.getServer().getDataCenter()
                 .runTransact(transaction -> {
                     WithdrawResult result = sender.getSolarPlayer().getData(CreditsKey.INSTANCE)
                             .withdrawBalance(transaction, BigDecimal.valueOf(amount));
                     if (result.isSuccessful()) {
-                        receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).depositBalance(transaction,
+                        receiver.getData(CreditsKey.INSTANCE).depositBalance(transaction,
                                 BigDecimal.valueOf(amount));
                         sender.sendMessage(translateToColor(sendConfig.successful()));
                     } else
@@ -96,10 +103,10 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
                 });
     }
 
-    public void addCredits(CommandSender sender, Player receiver, double amount) {
+    public void addCredits(CommandSender sender, SolarPlayer receiver, double amount) {
         CommandMessageConfig addConfig = getMessageConfig("add");
         plugin.getServer().getDataCenter()
-                .runTransact(transaction -> receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
+                .runTransact(transaction -> receiver.getData(CreditsKey.INSTANCE)
                         .depositBalance(transaction, BigDecimal.valueOf(amount)))
                 .thenRunSync(() -> sender.sendMessage(translateToColor(addConfig.successful())))
                 .exceptionally((ex) -> {
@@ -109,11 +116,11 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
                 });
     }
 
-    public void removeCredits(CommandSender sender, Player receiver, double amount) {
+    public void removeCredits(CommandSender sender, SolarPlayer receiver, double amount) {
         CommandMessageConfig removeConfig = getMessageConfig("remove");
         plugin.getServer().getDataCenter()
                 .runTransact(transaction -> {
-                    WithdrawResult result = receiver.getSolarPlayer().getData(CreditsKey.INSTANCE)
+                    WithdrawResult result = receiver.getData(CreditsKey.INSTANCE)
                             .withdrawBalance(transaction, BigDecimal.valueOf(amount));
                     if (result.isSuccessful())
                         sender.sendMessage(translateToColor(removeConfig.successful()));
@@ -128,10 +135,10 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
                 });
     }
 
-    public void setCredits(CommandSender sender, Player receiver, double amount) {
+    public void setCredits(CommandSender sender, SolarPlayer receiver, double amount) {
         CommandMessageConfig setConfig = getMessageConfig("set");
         plugin.getServer().getDataCenter()
-                .runTransact(transaction -> receiver.getSolarPlayer().getData(CreditsKey.INSTANCE).setBalance(transaction, BigDecimal.valueOf(amount)))
+                .runTransact(transaction -> receiver.getData(CreditsKey.INSTANCE).setBalance(transaction, BigDecimal.valueOf(amount)))
                 .thenRunSync(() -> sender.sendMessage(translateToColor(setConfig.successful())))
                 .exceptionally((ex) -> {
                     sender.sendMessage(translateToColor(setConfig.error()));

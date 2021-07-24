@@ -22,6 +22,12 @@ public record BalanceCommand(SolarCredit plugin) implements CreditSubCommand {
             }
 
             player = plugin.getServer().getPlayerExact(args[0]);
+
+            if (player == null) {
+                sender.sendMessage(ChatColor.RED + "Sorry, but I'm not able to find the player " + args[0] + " !");
+                return;
+            }
+
             balance = getBalance(player);
             sender.sendMessage(ChatColor.GREEN + player.getName() + "'s balance is : " + helper.formatBigDecimal(balance));
         } else
