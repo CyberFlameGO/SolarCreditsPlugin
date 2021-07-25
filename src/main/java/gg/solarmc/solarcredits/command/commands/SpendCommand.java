@@ -9,6 +9,8 @@ import gg.solarmc.solarcredits.command.CreditSubCommand;
 import gg.solarmc.solarcredits.config.configs.CommandMessageConfig;
 import gg.solarmc.solarcredits.menus.ConfirmMenu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import okhttp3.FormBody;
@@ -65,10 +67,15 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
 
                                                 if (result.isSuccessful())
                                                     createGiftCard(player, amount,
-                                                            giftCardCode -> player.sendMessage(new String[]{
-                                                                    helper.translateToColor(config.successful()),
-                                                                    helper.translateToColor("&aGift Card Code : &l&6" + giftCardCode)
-                                                            }),
+                                                            giftCardCode -> {
+                                                                Component msg = helper.translateColorCode(config.successful())
+                                                                        .append(Component.newline())
+                                                                        .append(helper.translateColorCode("&aGift Card Code : &l&6"))
+                                                                        .append(Component.text(giftCardCode, NamedTextColor.GOLD, TextDecoration.BOLD)
+                                                                                .hoverEvent(HoverEvent.showText(Component.text("Click to Copy :)", NamedTextColor.YELLOW)))
+                                                                                .clickEvent(ClickEvent.copyToClipboard(giftCardCode)));
+                                                                player.sendMessage(msg);
+                                                            },
                                                             logger);
                                                 else
                                                     player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
@@ -152,5 +159,10 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
     @Override
     public String getDescription() {
         return "Spend credits for a gift card :D";
+    }
+
+    @Override
+    public String getPermission() {
+        return null;
     }
 }
