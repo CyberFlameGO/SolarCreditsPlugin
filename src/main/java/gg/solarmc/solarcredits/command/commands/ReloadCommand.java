@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 public record ReloadCommand(SolarCredit plugin) implements CreditSubCommand {
     @Override
     public void execute(CommandSender sender, String[] args, CommandHelper helper) {
-        if (sender.hasPermission("credits.reload")) {
+        if (sender.hasPermission(getPermission())) {
             plugin.reloadConfig();
             helper.getLogger().info("Reloaded Credits Plugin");
             sender.sendMessage(ChatColor.GREEN + "Reload Complete!");
@@ -30,6 +30,11 @@ public record ReloadCommand(SolarCredit plugin) implements CreditSubCommand {
     @Override
     public String getDescription() {
         return "Reloads the plugin";
+    }
+
+    @Override
+    public String getPermission() {
+        return "credits.reload";
     }
 
 

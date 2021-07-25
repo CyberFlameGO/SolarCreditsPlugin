@@ -34,6 +34,11 @@ public class CreditCommands implements CommandExecutor {
         if (args.length == 0) {
             String commands = "Solar Credits Commands : \n" +
                     subCommands.stream()
+                            .filter(it -> {
+                                String permission = command.getPermission();
+                                if (permission == null) return true;
+                                return sender.hasPermission(permission);
+                            })
                             .map(it -> ChatColor.BOLD + it.getName() + ChatColor.RESET + " " + it.getArgs() + " : " + it.getDescription())
                             .collect(Collectors.joining("\n")) +
                     "\n/credits <command>";

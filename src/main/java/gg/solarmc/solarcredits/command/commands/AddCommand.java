@@ -9,7 +9,7 @@ public class AddCommand implements CreditSubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args, CommandHelper helper) {
-        if (sender.hasPermission("credits.add"))
+        if (sender.hasPermission(getPermission()))
             helper.validateAndRun(sender, args,
                     (receiver, amount) -> helper.addCredits(sender, receiver, amount));
         else
@@ -29,5 +29,10 @@ public class AddCommand implements CreditSubCommand {
     @Override
     public String getDescription() {
         return "Adds credits to a Player";
+    }
+
+    @Override
+    public String getPermission() {
+        return "credits.add";
     }
 }

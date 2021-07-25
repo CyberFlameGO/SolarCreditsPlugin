@@ -37,4 +37,9 @@ public record SendCommand(SolarCredit plugin) implements CreditSubCommand {
     public String getDescription() {
         return "Sends credits to a Player";
     }
+
+    @Override
+    public String getPermission() {
+        return null;
+    }
 }

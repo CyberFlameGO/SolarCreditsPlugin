@@ -52,4 +52,9 @@ public record BalanceCommand(SolarCredit plugin) implements CreditSubCommand {
     public String getDescription() {
         return "See your ";
     }
+
+    @Override
+    public String getPermission() {
+        return null;
+    }
 }

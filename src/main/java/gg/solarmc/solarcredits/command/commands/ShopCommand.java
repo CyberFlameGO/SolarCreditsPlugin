@@ -30,4 +30,9 @@ public record ShopCommand(SolarCredit plugin) implements CreditSubCommand {
     public String getDescription() {
         return "Opens the credits shop for the day";
     }
+
+    @Override
+    public String getPermission() {
+        return null;
+    }
 }

@@ -11,5 +11,7 @@ public interface CreditSubCommand {
     String getArgs();
 
     String getDescription();
+    
+    String getPermission();
 
 }

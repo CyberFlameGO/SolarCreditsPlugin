@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 public class RemoveCommand implements CreditSubCommand {
     @Override
     public void execute(CommandSender sender, String[] args, CommandHelper helper) {
-        if (sender.hasPermission("credits.remove"))
+        if (sender.hasPermission(getPermission()))
             helper.validateAndRun(sender, args,
                     (receiver, amount) -> helper.removeCredits(sender, receiver, amount));
         else
@@ -28,5 +28,10 @@ public class RemoveCommand implements CreditSubCommand {
     @Override
     public String getDescription() {
         return "Removes credits from a Player";
+    }
+
+    @Override
+    public String getPermission() {
+        return "credits.remove";
     }
 }
