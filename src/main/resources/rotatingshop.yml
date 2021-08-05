@@ -1,0 +1,69 @@
+tebex:
+  secret: ''
+
+items:
+  1:
+    material: diamond_sword
+    priceincredits: 3
+    command: give @p diamond_sword
+    message: "You were given a Diamond Sword"
+    displayName: "&l&cA Normal Sword"
+    lore:
+      - "&aYes"
+  2:
+    material: bread
+    priceincredits: 2
+    command: give @p bread
+    message: "You were given a Piece of Bread"
+    displayName: "&l&2A Normal Bread"
+    lore:
+      - "&aYes"
+  3:
+    material: water_bucket
+    priceincredits: 1
+    command: give @p water_bucket
+    message: "You were given a Water Bucket"
+    displayName: "&l&9Water"
+    lore:
+      - "&aYes"
+  4:
+    material: lava_bucket
+    priceincredits: 2
+    command: give @p lava_bucket
+    message: "You were given a Lava Bucket"
+    displayName: "&l&6Lava"
+    lore:
+      - "&aYes"
+  5:
+    material: diamond_axe
+    priceincredits: 3
+    command: give @p diamond_axe
+    message: "You were given a Diamond Axe"
+    displayName: "&l&cA Normal Axe"
+    lore:
+      - "&aYes"
+  6:
+    material: diamond_pickaxe
+    priceincredits: 2
+    command: give @p diamond_pickaxe
+    message: "You were given a Diamond Pickaxe"
+    displayName: "&l&2A Normal Pickaxe"
+    lore:
+      - "&aEasy"
+  7:
+    material: diamond_shovel
+    priceincredits: 1
+    command: give @p diamond_shovel
+    message: "You were given a Diamond Shovel"
+    displayName: "&l&9A Normal Shovel"
+    lore:
+      - "&bHard"
+  8:
+    material: stick
+    priceincredits: 2
+    command: give @p stick
+    message: "You were given a Stick"
+    displayName: "&l&6Stick"
+    lore:
+      - "&cThis can be a kb stick"
+      - "I said can"

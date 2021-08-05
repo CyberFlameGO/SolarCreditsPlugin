@@ -1,0 +1,9 @@
+name: SolarCredits
+main: gg.solarmc.solarcredits.SolarCredit
+version: ${project.version}
+authors: [ herobrine99dan, zoneinfinity ]
+commands:
+   credits:
+      description: The only command of SolarCredit
+      usage: /<command>
+depend: [PlaceholderAPI]

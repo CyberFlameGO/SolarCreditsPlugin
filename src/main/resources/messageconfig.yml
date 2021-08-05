@@ -1,0 +1,16 @@
+playernotfound: "&cSorry, but I'm not able to find the player {player}"
+add:
+  successful: "&aDone!"
+  error: "&cSomething went wrong, please try again later..."
+remove:
+  successful: "&aDone!"
+  error: "&cSomething went wrong, please try again later..."
+send:
+  successful: "&aDone!"
+  error: "&cSomething went wrong, please try again later..."
+set:
+  successful: "&aDone!"
+  error: "&cSomething went wrong, please try again later..."
+spend:
+  successful: "&aDone!"
+  error: "&cSomething went wrong, please try again later..."
