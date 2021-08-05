@@ -1,4 +1,10 @@
+ # Do not touch this :)
+ # This is the last day when the shop was rotated
+lastRotateDay: 1
 playersInteracted:
+  0:
+    players: []
+
   3:
     players: []
 
@@ -8,10 +14,4 @@ playersInteracted:
   1:
     players: []
 
-  0:
-    players: []
 
-
- # Do not touch this :)
- # This is the last day when the shop was rotated
-lastRotateDay: 1

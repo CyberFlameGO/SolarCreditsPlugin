@@ -75,8 +75,7 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
                                                                                 .hoverEvent(HoverEvent.showText(Component.text("Click to Copy :)", NamedTextColor.YELLOW)))
                                                                                 .clickEvent(ClickEvent.copyToClipboard(giftCardCode)));
                                                                 player.sendMessage(msg);
-                                                            },
-                                                            logger);
+                                                            }, logger);
                                                 else
                                                     player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                                             })
@@ -99,6 +98,7 @@ public record SpendCommand(SolarCredit plugin, String tebexSecret,
     /**
      * amount Currency Value of the gift card
      */
+    @SuppressWarnings("ConstantConditions")
     private void createGiftCard(Player sender, double amount, Consumer<String> giftCardCode, Logger logger) {
         try {
             RequestBody body = new FormBody.Builder()
