@@ -4,6 +4,7 @@ import gg.solarmc.loader.credits.CreditsKey;
 import gg.solarmc.solarcredits.SolarCredit;
 import gg.solarmc.solarcredits.command.CommandHelper;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,8 +45,10 @@ public class CreditsBalance extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, @NotNull String params) {
-        BigDecimal bal = player.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
+    public String onRequest(OfflinePlayer player, @NotNull String params) {
+        Player p = player.getPlayer();
+        if (p == null) return null;
+        BigDecimal bal = p.getSolarPlayer().getData(CreditsKey.INSTANCE).currentBalance();
         return helper.formatBigDecimal(bal);
     }
 }
