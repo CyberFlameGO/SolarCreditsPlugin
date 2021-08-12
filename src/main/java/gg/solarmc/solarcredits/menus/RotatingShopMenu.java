@@ -131,23 +131,22 @@ public class RotatingShopMenu {
                             final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.priceInCredits()));
                             if (result.isSuccessful()) {
                                 List<String> commands = rotatingItem.commands();
-                                List<Boolean> success = new ArrayList<>();
-                                commands.forEach(cmd ->
-                                        success.add(helper.dispatchCommand(server,
-                                                cmd.replace("@p", player.getName())))
-                                );
+                                commands.forEach(cmd -> {
+                                    helper.dispatchCommand(server, cmd.replace("@p", player.getName()))
+                                            .thenAccept(bool -> {
+                                                if (!bool) {
+                                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
 
-                                if (success.stream().anyMatch(it -> !it)) {
-                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
+                                                    Set<UUID> uuids = playersInteracted.get(slotId);
+                                                    uuids.add(player.getUniqueId());
+                                                    playersInteracted.set(slotId, uuids);
+                                                    return;
+                                                }
 
-                                    Set<UUID> uuids = playersInteracted.get(slotId);
-                                    uuids.add(player.getUniqueId());
-                                    playersInteracted.set(slotId, uuids);
-                                    return;
-                                }
-
-                                player.sendMessage(ChatColor.RED + "Something went wrong, please report this to Admins!!");
-                                LOGGER.error("There was a problem dispatching a command from key " + rotatingItem.key() + " in rotatingshop.yml");
+                                                player.sendMessage(ChatColor.RED + "Something went wrong, please report this to Admins!!");
+                                                LOGGER.error("There was a problem dispatching a command from key " + rotatingItem.key() + " in rotatingshop.yml");
+                                            });
+                                });
                             } else
                                 player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                         })

@@ -16,9 +16,10 @@ import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import space.arim.omnibus.util.ThisClass;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.math.BigDecimal;
-import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
 public record CommandHelper(SolarCredit plugin, MessageConfig config) {
@@ -163,15 +164,12 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
         return PlainComponentSerializer.plain().serialize(c);
     }
 
-    public boolean dispatchCommand(Server server, String command) {
-        try {
-            return server.getScheduler().callSyncMethod(plugin,
-                    () -> server.dispatchCommand(server.getConsoleSender(),
-                            command.replaceFirst("^/", ""))
-            ).get();
-        } catch (InterruptedException | ExecutionException e) {
+    public CentralisedFuture<Boolean> dispatchCommand(Server server, String command) {
+        FactoryOfTheFuture futuresFactory = server.getOmnibus().getRegistry().getProvider(FactoryOfTheFuture.class).orElseThrow();
+        return futuresFactory.supplySync(() -> server.dispatchCommand(server.getConsoleSender(),
+                command.replaceFirst("^/", ""))).exceptionally(e -> {
             LOGGER.error("Something went wrong Dispatching a command, Check if the command is correct " + command, e);
-            return false;
-        }
+            return null;
+        });
     }
 }
