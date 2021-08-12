@@ -8,26 +8,26 @@ import java.util.List;
 public interface ItemConfig {
 
     @ConfKey("material")
-    @ConfDefault.DefaultString("diamond")
+    @ConfDefault.DefaultString("")
     String material();
 
     @ConfKey("priceincredits")
-    @ConfDefault.DefaultDouble(1)
+    @ConfDefault.DefaultDouble(-1)
     double priceInCredits();
 
     @ConfKey("command")
-    @ConfDefault.DefaultString("give @p minecraft:diamond")
-    String command();
+    @ConfDefault.DefaultStrings("")
+    List<String> command();
 
     @ConfKey("message")
-    @ConfDefault.DefaultString("You have got a Diamond :D")
+    @ConfDefault.DefaultString("")
     String message();
 
     @ConfKey("displayName")
-    @ConfDefault.DefaultString("Diemond")
+    @ConfDefault.DefaultString("")
     String displayName();
 
     @ConfKey("lore")
-    @ConfDefault.DefaultStrings({"This is a diamond if you didn't know :D"})
+    @ConfDefault.DefaultStrings({""})
     List<String> lore();
 }

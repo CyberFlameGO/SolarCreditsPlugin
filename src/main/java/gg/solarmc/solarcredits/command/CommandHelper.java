@@ -166,7 +166,8 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
     public boolean dispatchCommand(Server server, String command) {
         try {
             return server.getScheduler().callSyncMethod(plugin,
-                    () -> server.dispatchCommand(server.getConsoleSender(), command.replaceFirst("^/", ""))
+                    () -> server.dispatchCommand(server.getConsoleSender(),
+                            command.replaceFirst("^/", ""))
             ).get();
         } catch (InterruptedException | ExecutionException e) {
             LOGGER.error("Something went wrong Dispatching a command, Check if the command is correct " + command, e);

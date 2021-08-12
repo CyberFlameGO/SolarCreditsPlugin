@@ -37,18 +37,19 @@ public class Config {
                 throw new NullPointerException("Material from key " + it.getKey() + " is not valid");
 
             double price = value.priceInCredits();
-            String command = value.command();
+            List<String> commands = value.command();
             String message = value.message();
             String displayName = value.displayName();
             List<String> lore = value.lore();
 
             if (value.material().isEmpty()
                     || price == -1
-                    || command.isEmpty()
-                    || message.isEmpty())
+                    || commands.isEmpty()
+                    || message.isEmpty()
+                    || displayName.isEmpty())
                 throw new NullPointerException("Missing key from " + it.getKey() + " in rotatingshop.yml");
 
-            final RotatingItem item = new RotatingItem(it.getKey(), material, price, command, message, displayName, lore);
+            final RotatingItem item = new RotatingItem(it.getKey(), material, price, commands, message, displayName, lore);
             rotatingItems.add(item);
         });
     }
