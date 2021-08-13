@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -131,22 +132,26 @@ public class RotatingShopMenu {
                             final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.priceInCredits()));
                             if (result.isSuccessful()) {
                                 List<String> commands = rotatingItem.commands();
+                                List<Boolean> success = new ArrayList<>(commands.size());
+
                                 commands.forEach(cmd -> {
                                     helper.dispatchCommand(server, cmd.replace("@p", player.getName()))
                                             .thenAccept(bool -> {
+                                                success.add(bool);
                                                 if (!bool) {
-                                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
-
-                                                    Set<UUID> uuids = playersInteracted.get(slotId);
-                                                    uuids.add(player.getUniqueId());
-                                                    playersInteracted.set(slotId, uuids);
-                                                    return;
+                                                    player.sendMessage(ChatColor.RED + "Something went wrong, please report this to Admins!!");
+                                                    throw new CommandException("There was a problem dispatching a command from key " + rotatingItem.key() + " in rotating shop");
                                                 }
-
-                                                player.sendMessage(ChatColor.RED + "Something went wrong, please report this to Admins!!");
-                                                LOGGER.error("There was a problem dispatching a command from key " + rotatingItem.key() + " in rotatingshop.yml");
                                             });
                                 });
+
+                                if (success.stream().anyMatch(it -> !it)) {
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
+
+                                    Set<UUID> uuids = playersInteracted.get(slotId);
+                                    uuids.add(player.getUniqueId());
+                                    playersInteracted.set(slotId, uuids);
+                                }
                             } else
                                 player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                         })

@@ -11,6 +11,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
@@ -166,8 +167,15 @@ public record CommandHelper(SolarCredit plugin, MessageConfig config) {
 
     public CentralisedFuture<Boolean> dispatchCommand(Server server, String command) {
         FactoryOfTheFuture futuresFactory = server.getOmnibus().getRegistry().getProvider(FactoryOfTheFuture.class).orElseThrow();
-        return futuresFactory.supplySync(() -> server.dispatchCommand(server.getConsoleSender(),
-                command.replaceFirst("^/", ""))).exceptionally(e -> {
+
+        return futuresFactory.supplySync(() -> {
+            try {
+                server.dispatchCommand(server.getConsoleSender(), command.replaceFirst("^/", ""));
+                return true;
+            } catch (CommandException e) {
+                return false;
+            }
+        }).exceptionally(e -> {
             LOGGER.error("Something went wrong Dispatching a command, Check if the command is correct " + command, e);
             return null;
         });
