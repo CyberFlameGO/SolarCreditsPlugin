@@ -22,6 +22,8 @@ import org.ipvp.canvas.slot.Slot;
 import org.ipvp.canvas.type.ChestMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -129,29 +131,21 @@ public class RotatingShopMenu {
                 Server server = plugin.getServer();
                 server.getDataCenter()
                         .runTransact((transaction) -> {
-                            final WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.priceInCredits()));
+                            WithdrawResult result = player.getSolarPlayer().getData(CreditsKey.INSTANCE).withdrawBalance(transaction, BigDecimal.valueOf(rotatingItem.priceInCredits()));
                             if (result.isSuccessful()) {
                                 List<String> commands = rotatingItem.commands();
-                                List<Boolean> success = new ArrayList<>(commands.size());
-
                                 commands.forEach(cmd -> {
-                                    helper.dispatchCommand(server, cmd.replace("@p", player.getName()))
-                                            .thenAccept(bool -> {
-                                                success.add(bool);
-                                                if (!bool) {
-                                                    player.sendMessage(ChatColor.RED + "Something went wrong, please report this to Admins!!");
-                                                    throw new CommandException("There was a problem dispatching a command from key " + rotatingItem.key() + " in rotating shop");
-                                                }
-                                            });
+                                    dispatchCommand(server, cmd, player).thenAccept(bool -> {
+                                        if (!bool)
+                                            throw new CommandException("Invalid command in key " + rotatingItem.key());
+                                    });
                                 });
 
-                                if (success.stream().anyMatch(it -> !it)) {
-                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', rotatingItem.message()));
 
-                                    Set<UUID> uuids = playersInteracted.get(slotId);
-                                    uuids.add(player.getUniqueId());
-                                    playersInteracted.set(slotId, uuids);
-                                }
+                                Set<UUID> uuids = playersInteracted.get(slotId);
+                                uuids.add(player.getUniqueId());
+                                playersInteracted.set(slotId, uuids);
                             } else
                                 player.sendMessage(ChatColor.RED + "Sorry, you don't have enough money!");
                         })
@@ -210,6 +204,20 @@ public class RotatingShopMenu {
         }
         final int group = ((int) days % (rotatingItems.size() / 4)) * 4;
         return new RotatingItem[]{rotatingItems.get(group), rotatingItems.get(group + 1), rotatingItems.get(group + 2), rotatingItems.get(group + 3)};
+    }
+
+    private CentralisedFuture<Boolean> dispatchCommand(Server server, String command, Player player) {
+        FactoryOfTheFuture futuresFactory = server.getOmnibus().getRegistry().getProvider(FactoryOfTheFuture.class).orElseThrow();
+
+        return futuresFactory.supplySync(() -> {
+            server.dispatchCommand(server.getConsoleSender(),
+                    command.replace("@p", player.getName())
+                            .replaceFirst("^/", ""));
+            return true;
+        }).exceptionally(e -> {
+            LOGGER.error("Something went wrong Dispatching a command, Check if the command is correct " + command, e);
+            return false;
+        });
     }
 }
 
