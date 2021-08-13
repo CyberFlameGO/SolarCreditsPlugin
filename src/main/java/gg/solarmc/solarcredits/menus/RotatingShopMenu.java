@@ -95,9 +95,9 @@ public class RotatingShopMenu {
                 continue;
             }
 
-            itemMeta.lore(List.of(Component.text("Price: " + rotatingItem.priceInCredits() + " credits", NamedTextColor.AQUA)));
+            itemMeta.lore(List.of(Component.text("Price: " + rotatingItem.priceInCredits() + " Credits", NamedTextColor.AQUA)));
 
-            if (rotatingItem.lore() != null) {
+            if (!rotatingItem.lore().isEmpty()) {
                 final List<Component> components = rotatingItem.lore().stream().map(helper::translateColorCode).toList();
                 itemMeta.lore(components);
             }
@@ -197,8 +197,7 @@ public class RotatingShopMenu {
     public RotatingItem[] getItems() {
         final long days = TimeUnit.MILLISECONDS.toDays(Instant.now().toEpochMilli());
         if (lastDay < days) {
-            playersInteracted.clear();
-            for (int i = 0; i < 4; i++) playersInteracted.add(new HashSet<>());
+            for (int i = 0; i < 4; i++) playersInteracted.set(i, new HashSet<>());
 
             lastDay = days;
         }
